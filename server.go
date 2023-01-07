@@ -9,7 +9,7 @@ import (
 )
 
 const DEFAULT_HOST = "0.0.0.0"
-const DEFAULT_PORT = "46866"
+const DEFAULT_PORT = 46866
 const CONNECTION_TYPE = "tcp"
 
 var logger = log.New(os.Stderr, "", 0)
@@ -22,7 +22,7 @@ type Server interface {
 }
 
 func Listen(s Server, host string, port int) (err error) {
-	addr := DEFAULT_HOST + ":" + DEFAULT_PORT
+	addr := host + ":" + fmt.Sprint(port)
 	l, err := net.Listen(CONNECTION_TYPE, addr)
 
 	if err != nil {
