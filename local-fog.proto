@@ -1,31 +1,35 @@
 syntax = "proto3";
 package tutorial;
 
-import "google/protobuf/timestamp.proto";
 option go_package = "core/types";
 
-message Person {
-  string name = 1;
-  int32 id = 2;  // Unique ID number for this person.
-  string email = 3;
-
-  enum PhoneType {
-    MOBILE = 0;
-    HOME = 1;
-    WORK = 2;
+message Request {
+  // The type of the requset.
+  enum Type {
+    RESERVED = 0;
+    PING = 1;
+    SYNC = 2;
+    CALL = 3;
+    GET_REQUEST = 4;
   }
 
-  message PhoneNumber {
-    string number = 1;
-    PhoneType type = 2;
+  oneof conetnt {
+    Ping ping = 1;
+    Sync sync = 2;
+    Call call = 3;
+    GetProgram get_program = 4;
   }
-
-  repeated PhoneNumber phones = 4;
-
-  google.protobuf.Timestamp last_updated = 5;
 }
 
-// Our address book file is just one of these.
-message AddressBook {
-  repeated Person people = 1;
+message Ping {}
+
+message Sync {}
+
+message Call {
+  uint32 app_id = 1;
+  bytes body = 2;
+}
+
+message GetProgram {
+  uint32 app_id = 1;
 }
