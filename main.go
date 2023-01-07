@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import "log"
 
 func main() {
-	fmt.Println("hello, world")
+	node := Node{}
+
+	log.Fatal(Listen(node, DEFAULT_HOST, DEFAULT_PORT))
 }
