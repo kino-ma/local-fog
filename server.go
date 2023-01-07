@@ -15,6 +15,10 @@ var logger = log.New(os.Stderr, "", 0)
 
 type Server interface {
 	Handle(conn net.Conn)
+	HandlePing()
+	HandleSync()
+	HandleRequest(appId AppId, body []byte)
+	HandleProgramRequest(appId AppId)
 }
 
 func Listen(s Server, host string, port int) (err error) {
