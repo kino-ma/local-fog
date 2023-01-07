@@ -13,11 +13,13 @@
         pkgs = import nixpkgs { inherit system; };
 
         go = pkgs.go;
+        protoc = pkgs.protoc-gen-go;
       in
       {
         devShell = pkgs.mkShell {
           buildInputs = [
             go
+            protoc
           ];
         };
 
