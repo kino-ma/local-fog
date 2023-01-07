@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
 	"os"
@@ -14,11 +15,10 @@ const CONNECTION_TYPE = "tcp"
 var logger = log.New(os.Stderr, "", 0)
 
 type Server interface {
-	Handle(conn net.Conn)
-	HandlePing()
-	HandleSync()
-	HandleRequest(appId AppId, body []byte)
-	HandleProgramRequest(appId AppId)
+	HandlePing(p Ping)
+	HandleSync(s Sync)
+	HandleCall(c Call)
+	HandleGetProgram(g GetProgram)
 }
 
 func Listen(s Server, host string, port int) (err error) {
@@ -30,7 +30,6 @@ func Listen(s Server, host string, port int) (err error) {
 		return err
 	}
 
-	defer l.Close()
 	logger.Printf("Start listening on '%v'...\n", addr)
 
 	for {
@@ -40,6 +39,70 @@ func Listen(s Server, host string, port int) (err error) {
 			return err
 		}
 
-		go s.Handle(conn)
+		handle(&s, conn)
+	}
+}
+
+func handle(s *Server, conn net.Conn) {
+	defer conn.Close()
+	ss := *s
+
+	typ, err := ReadByte(conn)
+
+	if err != nil {
+		logger.Printf("Failed to read 1 byte from connection: %v\n", err)
+		return
+	}
+
+	req := Request{conn}
+
+	switch typ {
+	case TYPE_PING:
+		p := Ping{
+			Request: req,
+		}
+		ss.HandlePing(p)
+	case TYPE_SYNC:
+		sy := Sync{
+			Request: req,
+		}
+		ss.HandleSync(sy)
+	case TYPE_CALL:
+		appId, err := Read8BytesNE(conn)
+
+		if err != nil {
+			logger.Printf("Failed to read AppId from connection: %v\n", err)
+			return
+		}
+
+		body, err := ioutil.ReadAll(conn)
+
+		if err != nil {
+			logger.Printf("Failed to read Call body from connection: %v\n", err)
+			return
+		}
+
+		c := Call{
+			Request: req,
+			AppId:   AppId(appId),
+			Body:    body,
+		}
+
+		ss.HandleCall(c)
+
+	case TYPE_GET_PROGRAM:
+		appId, err := Read8BytesNE(conn)
+
+		if err != nil {
+			logger.Printf("Failed to read AppId from connection: %v\n", err)
+			return
+		}
+
+		g := GetProgram{
+			Request: req,
+			AppId:   AppId(appId),
+		}
+
+		ss.HandleGetProgram(g)
 	}
 }
