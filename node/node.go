@@ -3,25 +3,25 @@ package main
 import (
 	"fmt"
 
-	"local-fog/core"
+	t "local-fog/core/types"
 )
 
 type Node struct {
 }
 
-func (n Node) HandlePing(p core.Ping) {
+func (n Node) HandlePing(p t.Ping) {
 	fmt.Printf("ping: %+v\n", p)
 }
 
-func (n Node) HandleSync(s core.Sync) {
+func (n Node) HandleSync(s t.Sync) {
 	fmt.Printf("sync: %+v\n", s)
 
 }
 
-func (n Node) HandleCall(c core.Call) {
+func (n Node) HandleCall(c t.Call) {
 	fmt.Printf("call: %+v\n", c)
 }
 
-func (n Node) HandleGetProgram(g core.GetProgram) {
+func (n Node) HandleGetProgram(g t.GetProgram) {
 	fmt.Printf("get program: %+v\n", g)
 }

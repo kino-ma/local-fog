@@ -6,6 +6,8 @@ import (
 	"log"
 	"net"
 	"os"
+
+	t "local-fog/core/types"
 )
 
 const DEFAULT_HOST = "0.0.0.0"
@@ -15,10 +17,10 @@ const CONNECTION_TYPE = "tcp"
 var logger = log.New(os.Stderr, "", 0)
 
 type Server interface {
-	HandlePing(p Ping)
-	HandleSync(s Sync)
-	HandleCall(c Call)
-	HandleGetProgram(g GetProgram)
+	HandlePing(p t.Ping)
+	HandleSync(s t.Sync)
+	HandleCall(c t.Call)
+	HandleGetProgram(g t.GetProgram)
 }
 
 func Listen(s Server, host string, port int) (err error) {
@@ -54,20 +56,20 @@ func handle(s *Server, conn net.Conn) {
 		return
 	}
 
-	req := Request{conn}
+	req := t.Request{Conn: conn}
 
 	switch typ {
-	case TYPE_PING:
-		p := Ping{
+	case t.TYPE_PING:
+		p := t.Ping{
 			Request: req,
 		}
 		ss.HandlePing(p)
-	case TYPE_SYNC:
-		sy := Sync{
+	case t.TYPE_SYNC:
+		sy := t.Sync{
 			Request: req,
 		}
 		ss.HandleSync(sy)
-	case TYPE_CALL:
+	case t.TYPE_CALL:
 		appId, err := Read8BytesNE(conn)
 
 		if err != nil {
@@ -82,15 +84,15 @@ func handle(s *Server, conn net.Conn) {
 			return
 		}
 
-		c := Call{
+		c := t.Call{
 			Request: req,
-			AppId:   AppId(appId),
+			AppId:   t.AppId(appId),
 			Body:    body,
 		}
 
 		ss.HandleCall(c)
 
-	case TYPE_GET_PROGRAM:
+	case t.TYPE_GET_PROGRAM:
 		appId, err := Read8BytesNE(conn)
 
 		if err != nil {
@@ -98,9 +100,9 @@ func handle(s *Server, conn net.Conn) {
 			return
 		}
 
-		g := GetProgram{
+		g := t.GetProgram{
 			Request: req,
-			AppId:   AppId(appId),
+			AppId:   t.AppId(appId),
 		}
 
 		ss.HandleGetProgram(g)

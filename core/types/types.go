@@ -1,4 +1,4 @@
-package core
+package types
 
 import "net"
 
@@ -14,7 +14,7 @@ const (
 )
 
 type Request struct {
-	conn net.Conn
+	Conn net.Conn
 }
 
 type Ping struct {
