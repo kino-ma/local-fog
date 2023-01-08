@@ -8,6 +8,8 @@ import (
 	"os"
 
 	t "local-fog/core/types"
+
+	"google.golang.org/protobuf/proto"
 )
 
 const DEFAULT_HOST = "0.0.0.0"
@@ -48,6 +50,19 @@ func Listen(s Server, host string, port int) (err error) {
 func handle(s *Server, conn net.Conn) {
 	defer conn.Close()
 	ss := *s
+
+	req := &t.Request{}
+	buf, err := ioutil.ReadAll(conn)
+	if err != nil {
+		logger.Printf("Failed to read all from conn: %e\n", err)
+		return
+	}
+
+	err = proto.Unmarshal(buf, req)
+	if err != nil {
+		logger.Printf("Failed to unmarshal request: %e\n", err)
+		return
+	}
 
 	typ, err := ReadByte(conn)
 
