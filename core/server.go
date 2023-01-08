@@ -19,10 +19,10 @@ const CONNECTION_TYPE = "tcp"
 var logger = log.New(os.Stderr, "", 0)
 
 type Server interface {
-	HandlePing(p t.Ping)
-	HandleSync(s t.Sync)
-	HandleCall(c t.Call)
-	HandleGetProgram(g t.GetProgram)
+	HandlePing(p *t.Ping)
+	HandleSync(s *t.Sync)
+	HandleCall(c *t.Call)
+	HandleGetProgram(g *t.GetProgram)
 }
 
 func Listen(s Server, host string, port int) (err error) {
@@ -64,60 +64,51 @@ func handle(s *Server, conn net.Conn) {
 		return
 	}
 
-	typ, err := ReadByte(conn)
+	switch req.RequestType {
+	case t.Request_PING:
+		p := req.GetPing()
 
-	if err != nil {
-		logger.Printf("Failed to read 1 byte from connection: %v\n", err)
-		return
-	}
-
-	req := t.Request{Conn: conn}
-
-	switch typ {
-	case t.TYPE_PING:
-		p := t.Ping{
-			Request: req,
+		if p == nil {
+			typeName := t.Request_Type_name[int32(req.RequestType)]
+			content := req.GetConetnt()
+			logger.Printf("Requet type and content mismatch: type '%v (%v)' for %+v", typeName, req.RequestType, content)
+			return
 		}
+
 		ss.HandlePing(p)
+
 	case t.TYPE_SYNC:
-		sy := t.Sync{
-			Request: req,
+		s := req.GetSync()
+
+		if s == nil {
+			typeName := t.Request_Type_name[int32(req.RequestType)]
+			content := req.GetConetnt()
+			logger.Printf("Requet type and content mismatch: type '%v (%v)' for %+v", typeName, req.RequestType, content)
+			return
 		}
-		ss.HandleSync(sy)
+
+		ss.HandleSync(s)
+
 	case t.TYPE_CALL:
-		appId, err := Read8BytesNE(conn)
+		c := req.GetCall()
 
-		if err != nil {
-			logger.Printf("Failed to read AppId from connection: %v\n", err)
+		if c == nil {
+			typeName := t.Request_Type_name[int32(req.RequestType)]
+			content := req.GetConetnt()
+			logger.Printf("Requet type and content mismatch: type '%v' for %+v", typeName, content)
 			return
-		}
-
-		body, err := ioutil.ReadAll(conn)
-
-		if err != nil {
-			logger.Printf("Failed to read Call body from connection: %v\n", err)
-			return
-		}
-
-		c := t.Call{
-			Request: req,
-			AppId:   t.AppId(appId),
-			Body:    body,
 		}
 
 		ss.HandleCall(c)
 
 	case t.TYPE_GET_PROGRAM:
-		appId, err := Read8BytesNE(conn)
+		g := req.GetGetProgram()
 
-		if err != nil {
-			logger.Printf("Failed to read AppId from connection: %v\n", err)
+		if g == nil {
+			typeName := t.Request_Type_name[int32(req.RequestType)]
+			content := req.GetConetnt()
+			logger.Printf("Requet type and content mismatch: type '%v' for %+v", typeName, content)
 			return
-		}
-
-		g := t.GetProgram{
-			Request: req,
-			AppId:   t.AppId(appId),
 		}
 
 		ss.HandleGetProgram(g)
