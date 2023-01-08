@@ -13,11 +13,13 @@ message Request {
     GET_REQUEST = 4;
   }
 
+  Type request_type = 1;
+
   oneof conetnt {
-    Ping ping = 1;
-    Sync sync = 2;
-    Call call = 3;
-    GetProgram get_program = 4;
+    Ping ping = 2;
+    Sync sync = 3;
+    Call call = 4;
+    GetProgram get_program = 5;
   }
 }
 
