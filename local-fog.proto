@@ -3,35 +3,24 @@ package tutorial;
 
 option go_package = "core/types";
 
-message Request {
-  // The type of the requset.
-  enum Type {
-    RESERVED = 0;
-    PING = 1;
-    SYNC = 2;
-    CALL = 3;
-    GET_REQUEST = 4;
-  }
-
-  Type request_type = 1;
-
-  oneof conetnt {
-    Ping ping = 2;
-    Sync sync = 3;
-    Call call = 4;
-    GetProgram get_program = 5;
-  }
+service LocalFog {
+  rpc Ping(PingRequest) returns (PingReply) {}
+  rpc Sync(SyncRequest) returns (SyncReply) {}
+  rpc Call(CallRequest) returns (CallReply) {}
+  rpc GetProgram(GetProgramRequest) returns (GetProgramReply) {}
 }
 
-message Ping {}
+message PingRequest {}
+message PingReply {}
 
-message Sync {}
+message SyncRequest {}
+message SyncReply {}
 
-message Call {
+message CallRequest {
   uint32 app_id = 1;
   bytes body = 2;
 }
+message CallReply {}
 
-message GetProgram {
-  uint32 app_id = 1;
-}
+message GetProgramRequest { uint32 app_id = 1; }
+message GetProgramReply {}
