@@ -14,11 +14,11 @@
       in
       {
         devShell = pkgs.mkShell {
-          buildInputs = [
-            pkgs.go
-            pkgs.protobuf
-            pkgs.protoc-gen-go
-            pkgs.protoc-gen-go-grpc
+          buildInputs = with pkgs; [
+            go
+            protobuf
+            protoc-gen-go
+            protoc-gen-go-grpc
           ];
         };
 
