@@ -8,6 +8,7 @@ import (
 	pb "local-fog/core/types"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type FogConsumer struct {
@@ -17,7 +18,7 @@ type FogConsumer struct {
 
 func Connect(host string, port int) (FogConsumer, error) {
 	target := host + ":" + fmt.Sprint(port)
-	conn, err := grpc.Dial(target)
+	conn, err := grpc.Dial(target, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
 		return FogConsumer{}, err
