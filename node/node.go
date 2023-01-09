@@ -7,21 +7,29 @@ import (
 )
 
 type Node struct {
+	t.UnimplementedLocalFogServer
 }
 
-func (n Node) HandlePing(p *t.Ping) {
+func (n *Node) Ping(p *t.PingRequest) (*t.PingReply, error) {
 	fmt.Printf("ping: %+v\n", p)
+
+	return &t.PingReply{}, nil
 }
 
-func (n Node) HandleSync(s *t.Sync) {
-	fmt.Printf("sync: %+v\n", s)
+func (n *Node) Sync(p *t.SyncRequest) (*t.SyncReply, error) {
+	fmt.Printf("ping: %+v\n", p)
 
+	return &t.SyncReply{}, nil
 }
 
-func (n Node) HandleCall(c *t.Call) {
-	fmt.Printf("call: %+v\n", c)
+func (n *Node) Call(p *t.CallRequest) (*t.CallReply, error) {
+	fmt.Printf("ping: %+v\n", p)
+
+	return &t.CallReply{}, nil
 }
 
-func (n Node) HandleGetProgram(g *t.GetProgram) {
-	fmt.Printf("get program: %+v\n", g)
+func (n *Node) GetProgram(p *t.GetProgramRequest) (*t.GetProgramReply, error) {
+	fmt.Printf("ping: %+v\n", p)
+
+	return &t.GetProgramReply{}, nil
 }
