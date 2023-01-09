@@ -11,13 +11,14 @@
       let
         inherit (nixpkgs.lib) optional;
         pkgs = import nixpkgs { inherit system; };
-
-        go = pkgs.go;
       in
       {
         devShell = pkgs.mkShell {
-          buildInputs = [
+          buildInputs = with pkgs; [
             go
+            protobuf
+            protoc-gen-go
+            protoc-gen-go-grpc
           ];
         };
 

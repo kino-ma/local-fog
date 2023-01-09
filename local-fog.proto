@@ -1,0 +1,26 @@
+syntax = "proto3";
+package tutorial;
+
+option go_package = "core/types";
+
+service LocalFog {
+  rpc Ping(PingRequest) returns (PingReply) {}
+  rpc Sync(SyncRequest) returns (SyncReply) {}
+  rpc Call(CallRequest) returns (CallReply) {}
+  rpc GetProgram(GetProgramRequest) returns (GetProgramReply) {}
+}
+
+message PingRequest {}
+message PingReply {}
+
+message SyncRequest {}
+message SyncReply {}
+
+message CallRequest {
+  uint32 app_id = 1;
+  bytes body = 2;
+}
+message CallReply {}
+
+message GetProgramRequest { uint32 app_id = 1; }
+message GetProgramReply {}
