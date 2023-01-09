@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	node := Node{}
+	node := &Node{}
 
 	log.Fatal(core.Listen(node, core.DEFAULT_HOST, core.DEFAULT_PORT))
 }
