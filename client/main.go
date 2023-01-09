@@ -1,11 +1,20 @@
 package main
 
 import (
-	"fmt"
 	"local-fog/core"
+	"local-fog/core/types"
+	"log"
 )
 
 func main() {
-	fmt.Println(core.DEFAULT_HOST)
-	fmt.Println("hello")
+	consumer, err := core.Connect(core.DEFAULT_HOST, core.DEFAULT_PORT)
+
+	if err != nil {
+		log.Fatalf("failed to connec to the server: %e", err)
+	}
+
+	consumer.Ping(&types.PingRequest{})
+	consumer.Sync(&types.SyncRequest{})
+	consumer.Call(&types.CallRequest{})
+	consumer.GetProgram(&types.GetProgramRequest{})
 }
