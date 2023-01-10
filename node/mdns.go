@@ -8,7 +8,7 @@ import (
 	"golang.org/x/net/ipv4"
 )
 
-var MdnsConn *mdns.Conn = nil
+var GetMdnsCann chan *mdns.Conn = make(chan *mdns.Conn)
 
 func RegisterAndServeMdns() error {
 	addr, err := net.ResolveUDPAddr("udp", mdns.DefaultAddress)
@@ -21,12 +21,14 @@ func RegisterAndServeMdns() error {
 		return fmt.Errorf("failed to listen udp: %v", err)
 	}
 
-	MdnsConn, err = mdns.Server(ipv4.NewPacketConn(l), &mdns.Config{
+	conn, err := mdns.Server(ipv4.NewPacketConn(l), &mdns.Config{
 		LocalNames: []string{"_localfog._tcp.local"},
 	})
 	if err != nil {
+		close(GetMdnsCann)
 		return fmt.Errorf("failed to create mdns server: %v", err)
 	}
+	GetMdnsCann <- conn
 
 	select {}
 }
