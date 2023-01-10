@@ -8,13 +8,10 @@ import (
 func main() {
 	node := &Node{}
 
-	go func() {
-		err := RegisterAndServeMdns()
-
-		if err != nil {
-			panic(err)
-		}
-	}()
+	err := RegisterAndServeMdns()
+	if err != nil {
+		log.Fatalf("could not start mdns server: %v", err)
+	}
 
 	log.Fatal(core.Listen(node, core.DEFAULT_HOST, core.DEFAULT_PORT))
 }
