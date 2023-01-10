@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/pion/mdns"
+	"github.com/hashicorp/mdns"
 	"golang.org/x/net/ipv4"
 )
 

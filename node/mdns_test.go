@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/pion/mdns"
+	"github.com/hashicorp/mdns"
 )
 
 var conn *mdns.Conn
