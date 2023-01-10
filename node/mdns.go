@@ -16,7 +16,7 @@ func RegisterAndServeMdns() error {
 
 	info := []string{"LocalFog"}
 	ips := []net.IP{net.IPv4(127, 0, 0, 1)}
-	service, err := mdns.NewMDNSService(host, "_localfog._tcp", "local", "", 46866, ips, info)
+	service, err := mdns.NewMDNSService(host, "_localfog._tcp", "", "", 46866, ips, info)
 
 	if err != nil {
 		return fmt.Errorf("failed ot create ne wmDNS service: %v", err)
