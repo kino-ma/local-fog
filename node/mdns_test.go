@@ -3,14 +3,21 @@ package main
 import (
 	"context"
 	"testing"
+
+	"github.com/pion/mdns"
 )
 
-func BenchmarkRegisterAndServeMdns10000(b *testing.B) {
+var conn *mdns.Conn
+
+func init() {
 	go RegisterAndServeMdns()
+	conn = <-GetMdnsCann
+}
 
-	conn := <-GetMdnsCann
+func BenchmarkRegisterAndServeMdns10000(b *testing.B) {
+	_, _, err := conn.Query(context.TODO(), "_localfog._tcp.local")
 
-	for i := 0; i < 10000; i++ {
-		conn.Query(context.TODO(), "_localfog._tcp.local")
+	if err != nil {
+		b.Error(err)
 	}
 }
