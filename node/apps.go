@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"local-fog/core/types"
+
+	"golang.org/x/exp/maps"
 )
 
 type AppBinary []byte
@@ -24,4 +26,8 @@ func InsertApp(appId types.AppId, appBin AppBinary) error {
 func GetApp(appId types.AppId) (AppBinary, bool) {
 	bin, found := Apps[appId]
 	return bin, found
+}
+
+func GetAppIds() []types.AppId {
+	return maps.Keys(Apps)
 }
