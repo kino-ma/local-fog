@@ -22,11 +22,10 @@ func RegisterAndServeMdns() error {
 		return fmt.Errorf("failed ot create ne wmDNS service: %v", err)
 	}
 
-	server, err := mdns.NewServer(&mdns.Config{Zone: service})
+	_, err = mdns.NewServer(&mdns.Config{Zone: service})
 	if err != nil {
 		return fmt.Errorf("failed to create new mdns server: %v", err)
 	}
-	defer server.Shutdown()
 
 	return nil
 }

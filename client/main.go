@@ -7,7 +7,9 @@ import (
 )
 
 func main() {
-	consumer, err := core.Connect(core.DEFAULT_HOST, core.DEFAULT_PORT)
+	addr := Discover()
+	log.Println(addr)
+	consumer, err := core.Connect(addr.String(), core.DEFAULT_PORT)
 
 	if err != nil {
 		log.Fatalf("failed to connec to the server: %e", err)
