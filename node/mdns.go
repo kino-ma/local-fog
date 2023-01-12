@@ -24,7 +24,7 @@ func RegisterAndServeMdns() error {
 
 	info := []string{serviceTxt}
 	ips := []net.IP{serviceIp}
-	service, err := mdns.NewMDNSService(host, serviceName, "", "", core.DEFAULT_PORT, ips, info)
+	service, err := mdns.NewMDNSService(host, serviceName, "local.", "", core.DEFAULT_PORT, ips, info)
 
 	if err != nil {
 		return fmt.Errorf("failed ot create ne wmDNS service: %v", err)
