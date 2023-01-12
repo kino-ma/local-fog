@@ -10,6 +10,11 @@ service LocalFog {
   rpc GetProgram(GetProgramRequest) returns (GetProgramReply) {}
 }
 
+message Application {
+  uint64 app_id = 1;
+  bytes binary = 2;
+}
+
 message PingRequest {}
 message PingReply {}
 
@@ -17,10 +22,10 @@ message SyncRequest {}
 message SyncReply {}
 
 message CallRequest {
-  uint32 app_id = 1;
+  uint64 app_id = 1;
   bytes body = 2;
 }
 message CallReply {}
 
-message GetProgramRequest { uint32 app_id = 1; }
-message GetProgramReply {}
+message GetProgramRequest { repeated uint64 app_id = 1; }
+message GetProgramReply { repeated Application app = 1; }
