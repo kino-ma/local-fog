@@ -11,37 +11,43 @@ type AppBinary []byte
 
 var Apps map[types.AppId]AppBinary = make(map[types.AppId]AppBinary)
 
-func InsertApp(appId types.AppId, appBin AppBinary) error {
-	_, found := GetApp(appId)
+func InsertApp(app *types.Application) error {
+	id := types.AppId(app.AppId)
+	bin := app.Binary
+
+	_, found := GetAppBinary(id)
 
 	if found {
-		return fmt.Errorf("app with id %v already exists", appId)
+		return fmt.Errorf("app with id %v already exists", id)
 	}
 
-	Apps[appId] = appBin
+	Apps[id] = bin
 
 	return nil
 }
 
-func GetApp(appId types.AppId) (AppBinary, bool) {
+func GetAppBinary(appId types.AppId) (AppBinary, bool) {
 	bin, found := Apps[appId]
 	return bin, found
 }
 
-func GetApps(appIds []types.AppId) (map[types.AppId]AppBinary, error) {
-	bins := make(map[types.AppId]AppBinary)
+func GetApps(appIds []types.AppId) ([]types.Application, error) {
+	apps := make([]types.Application, len(appIds))
 
 	for _, id := range appIds {
-		bin, got := GetApp(id)
+		bin, got := GetAppBinary(id)
 
 		if !got {
 			return nil, fmt.Errorf("app with id %v not found", id)
 		}
 
-		bins[id] = bin
+		apps[id] = types.Application{
+			AppId:  uint64(id),
+			Binary: bin,
+		}
 	}
 
-	return bins, nil
+	return apps, nil
 }
 
 func GetAppIds() []types.AppId {
