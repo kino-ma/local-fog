@@ -11,7 +11,11 @@ import (
 func Discover() (net.IP, error) {
 	ch := make(chan *mdns.ServiceEntry)
 
-	err := mdns.Lookup("_localfog._tcp", ch)
+	queryParam := mdns.DefaultParams("_localfog._tcp")
+	queryParam.Entries = ch
+	queryParam.DisableIPv6 = true
+
+	err := mdns.Query(queryParam)
 	if err != nil {
 		return nil, fmt.Errorf("failed to lookup the service: %v", err)
 	}
