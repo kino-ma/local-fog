@@ -1,27 +1,26 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 
 	"github.com/hashicorp/mdns"
 )
 
-func Discover() (addr net.IP) {
-	ch := make(chan *mdns.ServiceEntry, 4)
+func Discover() (net.IP, error) {
+	ch := make(chan *mdns.ServiceEntry)
 
-	// var entry *mdns.ServiceEntry
-	i := 0
+	err := mdns.Lookup("_localfog._tcp", ch)
+	if err != nil {
+		return nil, fmt.Errorf("failed to lookup the service: %v", err)
+	}
 
-	go func() {
-		for entry := range ch {
-			log.Printf("got entry[%v]: %+v", i, entry)
-			i += 1
-		}
-	}()
+	log.Printf("start lookup")
 
-	mdns.Lookup("_localfog._tcp", ch)
+	entry := <-ch
+	log.Printf("got entry: %v", entry)
 	close(ch)
 
-	return
+	return entry.AddrV4, err
 }

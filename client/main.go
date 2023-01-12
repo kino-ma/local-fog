@@ -7,7 +7,11 @@ import (
 )
 
 func main() {
-	addr := Discover()
+	addr, err := Discover()
+	if err != nil {
+		log.Fatalf("failed to discover: %v", err)
+	}
+
 	log.Printf("discovered: %v", addr)
 	consumer, err := core.Connect(addr.String(), core.DEFAULT_PORT)
 
