@@ -9,7 +9,8 @@ import (
 )
 
 func Discover() (net.IP, error) {
-	ch := make(chan *mdns.ServiceEntry)
+	// We need to buffer data because mdns.Query will send data immediately after it starts
+	ch := make(chan *mdns.ServiceEntry, 1)
 
 	queryParam := mdns.DefaultParams("_localfog._tcp")
 	queryParam.Entries = ch
@@ -26,5 +27,5 @@ func Discover() (net.IP, error) {
 	log.Printf("got entry: %v", entry)
 	close(ch)
 
-	return entry.AddrV4, err
+	return entry.AddrV4, nil
 }
