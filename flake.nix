@@ -21,10 +21,7 @@
             protoc-gen-go-grpc
           ];
         };
-
-        apps.default = {
-          type = "app";
-          program = "go run .";
-        };
+        
+        # TODO: build outputs
       });
 }
