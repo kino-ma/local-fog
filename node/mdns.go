@@ -11,7 +11,7 @@ import (
 
 const (
 	serviceName = "_localfog._tcp"
-	serviceTxt  = "LocalFog"
+	serviceTxt  = "v=localfog id=123"
 )
 
 var serviceIp = net.IPv4(127, 0, 0, 1)
