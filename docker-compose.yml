@@ -1,0 +1,33 @@
+services:
+  node1:
+    image: nixos/nix:master
+    volumes:
+      - ".:/app:ro"
+      - "nix:/nix"
+      - "./nix.conf:/etc/nix/nix.conf:ro"
+    networks:
+      - default
+
+  node2:
+    image: nixos/nix:master
+    volumes:
+      - ".:/app:ro"
+      - "nix:/nix"
+      - "./nix.conf:/etc/nix/nix.conf:ro"
+    networks:
+      - default
+
+  node3:
+    image: nixos/nix:master
+    volumes:
+      - ".:/app:ro"
+      - "nix:/nix"
+      - "./nix.conf:/etc/nix/nix.conf:ro"
+    networks:
+      - default
+
+networks:
+  default:
+
+volumes:
+  nix:

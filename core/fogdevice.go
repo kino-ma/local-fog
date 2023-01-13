@@ -2,11 +2,15 @@ package core
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	pb "local-fog/core/types"
+	"local-fog/core/utils"
 
+	"github.com/hashicorp/mdns"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -30,6 +34,56 @@ func Connect(host string, port int) (FogConsumer, error) {
 		Conn:   conn,
 		Client: client,
 	}, nil
+}
+
+func Discover(maxCount int) ([]*pb.NodeInfoWrapper, error) {
+	// We need to buffer data because mdns.Query will send data immediately after it starts
+	ch := make(chan *mdns.ServiceEntry, maxCount)
+
+	queryParam := mdns.DefaultParams("_localfog._tcp")
+	queryParam.Entries = ch
+	queryParam.DisableIPv6 = true
+
+	errCh := make(chan error)
+
+	go func() {
+		err := mdns.Query(queryParam)
+		errCh <- err
+	}()
+
+	log.Printf("start lookup")
+
+	nodes := make([]*pb.NodeInfoWrapper, 0, maxCount)
+
+	for i := 0; i < maxCount; i++ {
+		select {
+		case err := <-errCh:
+			return nodes, err
+		case entry := <-ch:
+			log.Printf("got entry: %v", entry)
+
+			info, err := ParseTxt(entry.Info)
+			if err != nil {
+				if errors.Is(err, ErrNotLocalFogService) {
+					continue
+				} else {
+					return nil, err
+				}
+			}
+			if info.Id == 0 {
+				log.Printf("Invalid record: %v", entry)
+				continue
+			}
+
+			info.AddrV4 = utils.IpToUint32(entry.AddrV4)
+			info.AddrV6 = entry.AddrV6
+
+			nodes = append(nodes, info)
+		}
+	}
+	close(ch)
+
+	return nodes, nil
 }
 
 func (c FogConsumer) Ping(req *pb.PingRequest) (*pb.PingReply, error) {

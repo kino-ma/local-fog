@@ -10,6 +10,12 @@ service LocalFog {
   rpc GetProgram(GetProgramRequest) returns (GetProgramReply) {}
 }
 
+message NodeInfo {
+  uint64 id = 1;
+  fixed32 addr_v4 = 2;
+  bytes addr_v6 = 3;
+}
+
 message PingRequest {}
 message PingReply {}
 
