@@ -33,7 +33,10 @@ func main() {
 		log.Printf("Sync: %v", sr)
 	}
 
-	cr, err := consumer.Call(&types.CallRequest{})
+	cr, err := consumer.Call(&types.CallRequest{
+		AppId: 1,
+		Body:  []byte{},
+	})
 	if err != nil {
 		log.Printf("Call request failed: %v", err)
 	} else {
