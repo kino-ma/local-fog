@@ -13,10 +13,10 @@ import (
 
 const (
 	serviceName = "_localfog._tcp"
-	serviceTxt  = "v=localfog id=123"
 )
 
 var serviceIp net.IP
+var serviceTxt string
 var internetHost = net.IP{8, 8, 8, 8}
 
 func RegisterAndServeMdns() error {
@@ -30,8 +30,11 @@ func RegisterAndServeMdns() error {
 		return fmt.Errorf("failed to get the hostname: %v", err)
 	}
 
+	nodeId := len(Neighbors) + 1
+	serviceTxt = core.NewTxt(uint64(nodeId))
 	info := []string{serviceTxt}
 	ips := []net.IP{serviceIp}
+
 	service, err := mdns.NewMDNSService(host, serviceName, "local.", "", core.DEFAULT_PORT, ips, info)
 
 	if err != nil {
