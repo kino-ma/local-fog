@@ -1,0 +1,22 @@
+services:
+  node1:
+    image: nixos/nix:master
+    volumes:
+      - ".:/app:ro"
+      - "nix-store:/nix/store"
+    networks:
+      - default
+
+  node2:
+    image: nixos/nix:master
+    volumes:
+      - ".:/app:ro"
+      - "nix-store:/nix/store"
+    networks:
+      - default
+
+networks:
+  default:
+
+volumes:
+  nix-store:
