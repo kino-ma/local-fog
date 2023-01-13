@@ -49,7 +49,7 @@ func Discover(maxCount int) ([]*pb.NodeInfo, error) {
 
 	log.Printf("start lookup")
 
-	nodes := make([]*pb.NodeInfo, maxCount)
+	nodes := make([]*pb.NodeInfo, 0, maxCount)
 
 	for i := 0; i < maxCount; i++ {
 		entry, ok := <-ch
@@ -71,7 +71,7 @@ func Discover(maxCount int) ([]*pb.NodeInfo, error) {
 		info.AddrV4 = IpToUint32(entry.AddrV4)
 		info.AddrV6 = entry.AddrV6
 
-		nodes[i] = info
+		nodes = append(nodes, info)
 	}
 	close(ch)
 
