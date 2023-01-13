@@ -3,7 +3,7 @@ services:
     image: nixos/nix:master
     volumes:
       - ".:/app:ro"
-      - "nix-store:/nix/store"
+      - "nix:/nix"
       - "./nix.conf:/etc/nix/nix.conf:ro"
     networks:
       - default
@@ -12,7 +12,7 @@ services:
     image: nixos/nix:master
     volumes:
       - ".:/app:ro"
-      - "nix-store:/nix/store"
+      - "nix:/nix"
       - "./nix.conf:/etc/nix/nix.conf:ro"
     networks:
       - default
@@ -21,4 +21,4 @@ networks:
   default:
 
 volumes:
-  nix-store:
+  nix:
