@@ -4,8 +4,8 @@ import (
 	"local-fog/core/types"
 )
 
-var Neighbors []types.NodeInfo = []types.NodeInfo{}
+var Neighbors []*types.NodeInfo
 
-func UpdateNeighbors(neighbors []types.NodeInfo) {
+func UpdateNeighbors(neighbors []*types.NodeInfo) {
 	Neighbors = neighbors
 }
