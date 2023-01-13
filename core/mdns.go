@@ -9,12 +9,14 @@ import (
 
 const TXT_V_LOCALFOG = "v=localfog"
 
+var ErrNotLocalFogService error = fmt.Errorf("given txt is not a localfog record")
+
 func ParseTxt(txt string) (*types.NodeInfo, error) {
 	info := &types.NodeInfo{}
 	words := strings.Split(txt, " ")
 
 	if len(words) < 2 || words[0] != TXT_V_LOCALFOG {
-		err := fmt.Errorf("given txt is not a localfog record")
+		err := ErrNotLocalFogService
 		return info, err
 	}
 
