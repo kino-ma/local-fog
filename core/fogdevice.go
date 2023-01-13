@@ -42,36 +42,38 @@ func Discover(maxCount int) ([]*pb.NodeInfo, error) {
 	queryParam.Entries = ch
 	queryParam.DisableIPv6 = true
 
-	err := mdns.Query(queryParam)
-	if err != nil {
-		return nil, fmt.Errorf("failed to lookup the service: %v", err)
-	}
+	errCh := make(chan error)
+
+	go func() {
+		err := mdns.Query(queryParam)
+		errCh <- err
+	}()
 
 	log.Printf("start lookup")
 
 	nodes := make([]*pb.NodeInfo, 0, maxCount)
 
 	for i := 0; i < maxCount; i++ {
-		entry, ok := <-ch
-		if !ok {
-			break
+		select {
+		case err := <-errCh:
+			return nodes, err
+		case entry := <-ch:
+			log.Printf("got entry: %v", entry)
+
+			info, err := ParseTxt(entry.Info)
+			if err != nil {
+				return nil, err
+			}
+			if info.Id == 0 {
+				log.Printf("Invalid record: %v", entry)
+				continue
+			}
+
+			info.AddrV4 = IpToUint32(entry.AddrV4)
+			info.AddrV6 = entry.AddrV6
+
+			nodes = append(nodes, info)
 		}
-
-		log.Printf("got entry: %v", entry)
-
-		info, err := ParseTxt(entry.Info)
-		if err != nil {
-			return nil, err
-		}
-		if info.Id == 0 {
-			log.Printf("Invalid record: %v", entry)
-			continue
-		}
-
-		info.AddrV4 = IpToUint32(entry.AddrV4)
-		info.AddrV6 = entry.AddrV6
-
-		nodes = append(nodes, info)
 	}
 	close(ch)
 
