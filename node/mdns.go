@@ -15,25 +15,17 @@ const (
 	serviceName = "_localfog._tcp"
 )
 
-var serviceIp net.IP
-var serviceTxt string
 var internetHost = net.IP{8, 8, 8, 8}
 
-func RegisterAndServeMdns() error {
-	serviceIp, err := getPrimaryIp()
-	if err != nil {
-		return fmt.Errorf("failed to get primary ip: %w", err)
-	}
-
+func RegisterAndServeMdns(nodeId uint64, addr net.IP) error {
 	host, err := os.Hostname()
 	if err != nil {
 		return fmt.Errorf("failed to get the hostname: %v", err)
 	}
 
-	nodeId := len(Neighbors) + 1
-	serviceTxt = core.NewTxt(uint64(nodeId))
+	serviceTxt := core.NewTxt(uint64(nodeId))
 	info := []string{serviceTxt}
-	ips := []net.IP{serviceIp}
+	ips := []net.IP{addr}
 
 	service, err := mdns.NewMDNSService(host, serviceName, "local.", "", core.DEFAULT_PORT, ips, info)
 
