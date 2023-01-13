@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"local-fog/core/apps"
 	t "local-fog/core/types"
 )
 
@@ -26,7 +27,15 @@ func (n *Node) Sync(ctx context.Context, p *t.SyncRequest) (*t.SyncReply, error)
 func (n *Node) Call(ctx context.Context, p *t.CallRequest) (*t.CallReply, error) {
 	fmt.Printf("call: id = %v, body = %v\n", p.AppId, p.Body)
 
-	return &t.CallReply{}, nil
+	appId := t.AppId(p.AppId)
+	body := p.Body
+
+	out, err := apps.RunApp(appId, body)
+
+	reply := t.CallReply{}
+	reply.Output = out
+
+	return &reply, err
 }
 
 func (n *Node) GetProgram(ctx context.Context, p *t.GetProgramRequest) (*t.GetProgramReply, error) {

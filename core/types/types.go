@@ -10,3 +10,5 @@ const (
 	TYPE_CALL
 	TYPE_GET_PROGRAM
 )
+
+type AppFunction func(body []byte) ([]byte, error)
