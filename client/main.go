@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	addr, err := Discover()
+	addr, err := core.Discover()
 	if err != nil {
 		log.Fatalf("failed to discover: %v", err)
 	}
