@@ -9,7 +9,7 @@ import (
 
 const TXT_V_LOCALFOG = "v=localfog"
 
-func ParseTxt(txt string) (info types.NodeInfo, err error) {
+func ParseTxt(txt string) (info *types.NodeInfo, err error) {
 	words := strings.Split(txt, " ")
 
 	if len(words) < 2 || words[0] != TXT_V_LOCALFOG {
