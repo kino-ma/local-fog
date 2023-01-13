@@ -11,6 +11,11 @@ const TXT_V_LOCALFOG = "v=localfog"
 
 var ErrNotLocalFogService error = fmt.Errorf("given txt is not a localfog record")
 
+func NewTxt(nodeId uint64) string {
+	txt := fmt.Sprintf("%v id=%v", TXT_V_LOCALFOG, nodeId)
+	return txt
+}
+
 func ParseTxt(txt string) (*types.NodeInfo, error) {
 	info := &types.NodeInfo{}
 	words := strings.Split(txt, " ")
