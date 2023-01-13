@@ -4,6 +4,7 @@ services:
     volumes:
       - ".:/app:ro"
       - "nix-store:/nix/store"
+      - "./nix.conf:/etc/nix/nix.conf:ro"
     networks:
       - default
 
@@ -12,6 +13,7 @@ services:
     volumes:
       - ".:/app:ro"
       - "nix-store:/nix/store"
+      - "./nix.conf:/etc/nix/nix.conf:ro"
     networks:
       - default
 
