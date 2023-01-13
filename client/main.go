@@ -3,6 +3,7 @@ package main
 import (
 	"local-fog/core"
 	"local-fog/core/types"
+	"local-fog/core/utils"
 	"log"
 )
 
@@ -12,7 +13,7 @@ func main() {
 		log.Fatalf("failed to discover: %v", err)
 	}
 	node := nodes[0]
-	addr := core.Uint32ToIp((node.AddrV4))
+	addr := utils.Uint32ToIp((node.AddrV4))
 
 	log.Printf("discovered: %+v", addr)
 	consumer, err := core.Connect(addr.String(), core.DEFAULT_PORT)

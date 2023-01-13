@@ -8,6 +8,7 @@ import (
 	"time"
 
 	pb "local-fog/core/types"
+	"local-fog/core/utils"
 
 	"github.com/hashicorp/mdns"
 	"google.golang.org/grpc"
@@ -35,7 +36,7 @@ func Connect(host string, port int) (FogConsumer, error) {
 	}, nil
 }
 
-func Discover(maxCount int) ([]*pb.NodeInfo, error) {
+func Discover(maxCount int) ([]*pb.NodeInfoWrapper, error) {
 	// We need to buffer data because mdns.Query will send data immediately after it starts
 	ch := make(chan *mdns.ServiceEntry, maxCount)
 
@@ -52,7 +53,7 @@ func Discover(maxCount int) ([]*pb.NodeInfo, error) {
 
 	log.Printf("start lookup")
 
-	nodes := make([]*pb.NodeInfo, 0, maxCount)
+	nodes := make([]*pb.NodeInfoWrapper, 0, maxCount)
 
 	for i := 0; i < maxCount; i++ {
 		select {
@@ -74,7 +75,7 @@ func Discover(maxCount int) ([]*pb.NodeInfo, error) {
 				continue
 			}
 
-			info.AddrV4 = IpToUint32(entry.AddrV4)
+			info.AddrV4 = utils.IpToUint32(entry.AddrV4)
 			info.AddrV6 = entry.AddrV6
 
 			nodes = append(nodes, info)

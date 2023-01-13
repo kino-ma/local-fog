@@ -16,8 +16,8 @@ func NewTxt(nodeId uint64) string {
 	return txt
 }
 
-func ParseTxt(txt string) (*types.NodeInfo, error) {
-	info := &types.NodeInfo{}
+func ParseTxt(txt string) (*types.NodeInfoWrapper, error) {
+	info := &types.NodeInfoWrapper{}
 	words := strings.Split(txt, " ")
 
 	if len(words) < 2 || words[0] != TXT_V_LOCALFOG {

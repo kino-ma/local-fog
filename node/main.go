@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"local-fog/core"
 	"local-fog/core/types"
+	"local-fog/core/utils"
 	"log"
 )
 
-var NodeInfo *types.NodeInfo
+var info *types.NodeInfoWrapper
 
 func main() {
 	node := &Node{}
@@ -17,6 +18,8 @@ func main() {
 		err = fmt.Errorf("failed to discover neighbors: %v", err)
 		log.Fatal(err)
 	}
+	UpdateNeighbors(neighbors)
+	log.Printf("neighbors: %v", Neighbors)
 
 	nodeId := len(Neighbors) + 1
 	addr, err := getPrimaryIp()
@@ -25,13 +28,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	NodeInfo = &types.NodeInfo{
+	info = &types.NodeInfoWrapper{
 		Id:     uint64(nodeId),
-		AddrV4: core.IpToUint32(addr),
+		AddrV4: utils.IpToUint32(addr),
 	}
-
-	UpdateNeighbors(neighbors)
-	log.Print(Neighbors)
+	log.Printf("Staring node %v", info)
 
 	err = RegisterAndServeMdns(uint64(nodeId), addr)
 	if err != nil {
