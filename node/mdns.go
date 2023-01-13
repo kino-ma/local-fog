@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"local-fog/core"
+	"log"
 	"net"
 	"os"
 
+	"github.com/google/gopacket/routing"
 	"github.com/hashicorp/mdns"
 )
 
@@ -14,9 +16,15 @@ const (
 	serviceTxt  = "v=localfog id=123"
 )
 
-var serviceIp = net.IPv4(127, 0, 0, 1)
+var serviceIp net.IP
+var internetHost = net.IP{8, 8, 8, 8}
 
 func RegisterAndServeMdns() error {
+	serviceIp, err := getPrimaryIp()
+	if err != nil {
+		return fmt.Errorf("failed to get primary ip: %w", err)
+	}
+
 	host, err := os.Hostname()
 	if err != nil {
 		return fmt.Errorf("failed to get the hostname: %v", err)
@@ -36,4 +44,15 @@ func RegisterAndServeMdns() error {
 	}
 
 	return nil
+}
+
+func getPrimaryIp() (net.IP, error) {
+	router, err := routing.New()
+	if err != nil {
+		return nil, err
+	}
+
+	_, _, primaryIp, err := router.Route(internetHost)
+	log.Printf("ip = %v, err = %v", primaryIp, err)
+	return primaryIp, err
 }
