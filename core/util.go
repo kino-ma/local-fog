@@ -32,3 +32,9 @@ func Read8BytesNE(r io.Reader) (uint64, error) {
 func IpToUint32(ip net.IP) uint32 {
 	return binary.BigEndian.Uint32(ip)
 }
+
+func Uint32ToIp(n uint32) net.IP {
+	ip := make(net.IP, 4)
+	binary.BigEndian.PutUint32(ip, n)
+	return ip
+}
