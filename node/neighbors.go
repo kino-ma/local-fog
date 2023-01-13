@@ -1,10 +1,11 @@
 package main
 
-import "net"
+import (
+	"local-fog/core/types"
+)
 
-type NodeInfo struct {
-	Addr net.IPAddr
-	Id   uint64
+var Neighbors []types.NodeInfo = []types.NodeInfo{}
+
+func UpdateNeighbors(neighbors []types.NodeInfo) {
+	Neighbors = neighbors
 }
-
-var Neighbors []NodeInfo = []NodeInfo{}
