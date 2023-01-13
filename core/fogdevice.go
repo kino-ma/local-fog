@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -62,7 +63,11 @@ func Discover(maxCount int) ([]*pb.NodeInfo, error) {
 
 			info, err := ParseTxt(entry.Info)
 			if err != nil {
-				return nil, err
+				if errors.Is(err, ErrNotLocalFogService) {
+					continue
+				} else {
+					return nil, err
+				}
 			}
 			if info.Id == 0 {
 				log.Printf("Invalid record: %v", entry)
