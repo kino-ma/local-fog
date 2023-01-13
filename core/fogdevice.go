@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net"
 	"time"
 
 	pb "local-fog/core/types"
@@ -35,9 +34,9 @@ func Connect(host string, port int) (FogConsumer, error) {
 	}, nil
 }
 
-func Discover() (net.IP, error) {
+func Discover(maxCount int) ([]*pb.NodeInfo, error) {
 	// We need to buffer data because mdns.Query will send data immediately after it starts
-	ch := make(chan *mdns.ServiceEntry, 1)
+	ch := make(chan *mdns.ServiceEntry, maxCount)
 
 	queryParam := mdns.DefaultParams("_localfog._tcp")
 	queryParam.Entries = ch
@@ -50,11 +49,33 @@ func Discover() (net.IP, error) {
 
 	log.Printf("start lookup")
 
-	entry := <-ch
-	log.Printf("got entry: %v", entry)
+	nodes := make([]*pb.NodeInfo, maxCount)
+
+	for i := 0; i < maxCount; i++ {
+		entry, ok := <-ch
+		if !ok {
+			break
+		}
+
+		log.Printf("got entry: %v", entry)
+
+		info, err := ParseTxt(entry.Info)
+		if err != nil {
+			return nil, err
+		}
+		if info.Id == 0 {
+			log.Printf("Invalid record: %v", entry)
+			continue
+		}
+
+		info.AddrV4 = IpToUint32(entry.AddrV4)
+		info.AddrV6 = entry.AddrV6
+
+		nodes[i] = info
+	}
 	close(ch)
 
-	return entry.AddrV4, nil
+	return nodes, nil
 }
 
 func (c FogConsumer) Ping(req *pb.PingRequest) (*pb.PingReply, error) {
