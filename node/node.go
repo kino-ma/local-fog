@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"local-fog/core/apps"
 	t "local-fog/core/types"
@@ -42,4 +43,10 @@ func (n *Node) GetProgram(ctx context.Context, p *t.GetProgramRequest) (*t.GetPr
 	fmt.Printf("getProgram: id = %v\n", p.AppId)
 
 	return &t.GetProgramReply{}, nil
+}
+
+func (n *Node) UpdateNode(ctx context.Context, p *t.UpdateNodeRequest) (*t.UpdateNodeReply, error) {
+	log.Printf("updateNode: id = %+v\n", p)
+
+	return &t.UpdateNodeReply{}, nil
 }
