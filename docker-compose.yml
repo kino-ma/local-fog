@@ -4,6 +4,7 @@ services:
     volumes:
       - ".:/app:ro"
       - "nix:/nix"
+      - "go:/root/go"
       - "./nix.conf:/etc/nix/nix.conf:ro"
     working_dir: "/app"
     command: nix develop -c go run ./node
@@ -16,6 +17,7 @@ services:
       - ".:/app:ro"
       - "nix:/nix"
       - "./nix.conf:/etc/nix/nix.conf:ro"
+      - "go:/root/go"
     working_dir: "/app"
     command: sh -c "sleep 1 && nix develop -c go run ./node"
     networks:
@@ -27,6 +29,7 @@ services:
       - ".:/app:ro"
       - "nix:/nix"
       - "./nix.conf:/etc/nix/nix.conf:ro"
+      - "go:/root/go"
     working_dir: "/app"
     command: sh -c "sleep 2 && nix develop -c go run ./node"
     networks:
@@ -37,3 +40,5 @@ networks:
 
 volumes:
   nix:
+
+  go:
