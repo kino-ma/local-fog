@@ -40,3 +40,7 @@ func sortNeighbors(ns []*types.NodeInfoWrapper) {
 	compareId := func(i, j int) bool { return ns[i].Id < ns[i].Id }
 	sort.Slice(ns, compareId)
 }
+
+func chooseOrganizer(ns []*types.NodeInfoWrapper) *types.NodeInfoWrapper {
+	return ns[0]
+}

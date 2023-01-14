@@ -9,6 +9,7 @@ import (
 )
 
 var info *types.NodeInfoWrapper
+var organizer *types.NodeInfoWrapper
 
 func main() {
 	node := &Node{}
@@ -33,6 +34,14 @@ func main() {
 		AddrV4: utils.IpToUint32(addr),
 	}
 	log.Printf("Staring node %v", info)
+
+	organizer = chooseOrganizer(Neighbors)
+	if organizer.Id == info.Id {
+		log.Print("I am the organizer")
+		// go func (start periodic discovery)
+	} else {
+		log.Printf("node [%v] is the organizer", organizer.Id)
+	}
 
 	err = RegisterAndServeMdns(uint64(nodeId), addr)
 	if err != nil {
