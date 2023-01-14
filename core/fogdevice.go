@@ -115,3 +115,11 @@ func (c FogConsumer) GetProgram(req *pb.GetProgramRequest) (*pb.GetProgramReply,
 	return c.Client.GetProgram(ctx, req)
 
 }
+
+func (c FogConsumer) UpdateNode(req *pb.UpdateNodeRequest) (*pb.UpdateNodeReply, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	return c.Client.UpdateNode(ctx, req)
+
+}
