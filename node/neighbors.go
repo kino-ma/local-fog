@@ -53,8 +53,9 @@ func DeleteNeighbor(neigh *types.NodeInfoWrapper) error {
 }
 
 func ContinuosDiscovery() {
-	ticker := time.NewTicker(time.Minute)
+	ticker := time.NewTicker(syncPeriod)
 	for range ticker.C {
+		log.Print("ticker")
 		periodicSync()
 	}
 }
@@ -70,8 +71,8 @@ func periodicSync() {
 
 		PatchNeighbors(nodes)
 
-		o := chooseOrganizer(Neighbors)
-		iAmOrganizer = o.Id == info.Id
+		organizer = chooseOrganizer(Neighbors)
+		iAmOrganizer = organizer.Id == info.Id
 	}
 
 	// do monitoring
