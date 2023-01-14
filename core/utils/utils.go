@@ -45,7 +45,11 @@ func InsertSorted[T any](sortedTs []T, t T, compare func(x, y T) int) ([]T, int)
 	var dummy T
 	sortedTs = append(sortedTs, dummy)
 	i, _ := slices.BinarySearchFunc(sortedTs, t, compare)
-	copy(sortedTs[i+1:], sortedTs[i:])
-	sortedTs[i] = t
+	if i < len(sortedTs) {
+		copy(sortedTs[i+1:], sortedTs[i:])
+		sortedTs[i] = t
+	} else {
+		sortedTs[i-1] = t
+	}
 	return sortedTs, i
 }
