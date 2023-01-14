@@ -21,12 +21,12 @@ func main() {
 	UpdateNeighbors(neighbors)
 	log.Printf("neighbors: %v", Neighbors)
 
-	nodeId := len(Neighbors) + 1
 	addr, err := getPrimaryIp()
 	if err != nil {
 		err = fmt.Errorf("failed to get primary ip: %w", err)
 		log.Fatal(err)
 	}
+	nodeId := utils.IpToUint32(addr)
 
 	info = &types.NodeInfoWrapper{
 		Id:     uint64(nodeId),
