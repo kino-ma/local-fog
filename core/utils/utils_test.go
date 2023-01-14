@@ -7,8 +7,6 @@ import (
 )
 
 func TestInsertSorted(t *testing.T) {
-	s := []int{1, 3}
-	x := 2
 	f := func(x, y int) int {
 		if x < y {
 			return -1
@@ -19,10 +17,39 @@ func TestInsertSorted(t *testing.T) {
 		}
 	}
 
-	got, _ := InsertSorted(s, x, f)
-	want := []int{1, 2, 3}
+	func() {
+		s := []int{1, 3}
+		x := 2
 
-	if slices.Compare(got, want) != 0 {
-		t.Errorf("InsertSorted = %v, want %v", got, want)
-	}
+		got, _ := InsertSorted(s, x, f)
+		want := []int{1, 2, 3}
+
+		if slices.Compare(got, want) != 0 {
+			t.Errorf("InsertSorted = %v, want %v", got, want)
+		}
+	}()
+
+	func() {
+		s := []int{1, 2}
+		x := 3
+
+		got, _ := InsertSorted(s, x, f)
+		want := []int{1, 2, 3}
+
+		if slices.Compare(got, want) != 0 {
+			t.Errorf("InsertSorted = %v, want %v", got, want)
+		}
+	}()
+
+	func() {
+		s := []int{}
+		x := 1
+
+		got, _ := InsertSorted(s, x, f)
+		want := []int{1}
+
+		if slices.Compare(got, want) != 0 {
+			t.Errorf("InsertSorted = %v, want %v", got, want)
+		}
+	}()
 }
