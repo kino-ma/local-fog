@@ -42,6 +42,23 @@ func Uint32ToIp(n uint32) net.IP {
 	return ip
 }
 
+func RemoveIndex[T any](s []T, i int) []T {
+	s = append(s[:i], s[i+1:]...)
+	return s
+}
+
+func RemoveDuplicates[T any](s []T, compare func(x, y T) int) []T {
+	for i := 1; i < len(s)-1; i++ {
+		x, y := s[i], s[i+1]
+
+		if compare(x, y) == 0 {
+			s = RemoveIndex(s, i)
+		}
+	}
+
+	return s
+}
+
 func InsertSorted[T any](sortedTs []T, t T, compare func(x, y T) int) ([]T, int) {
 	i, _ := slices.BinarySearchFunc(sortedTs, t, compare)
 	var dummy T
