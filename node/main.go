@@ -20,7 +20,6 @@ func main() {
 		log.Fatal(err)
 	}
 	UpdateNeighbors(neighbors)
-	log.Printf("neighbors: %v", Neighbors)
 
 	addr, err := getPrimaryIp()
 	if err != nil {
@@ -34,6 +33,9 @@ func main() {
 		AddrV4: utils.IpToUint32(addr),
 	}
 	log.Printf("Staring node %v", info)
+
+	InsertNeighbor(info)
+	log.Printf("neighbors including self: %v", Neighbors)
 
 	organizer = chooseOrganizer(Neighbors)
 	if organizer.Id == info.Id {
