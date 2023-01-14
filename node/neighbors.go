@@ -37,7 +37,7 @@ func DeleteNeighbor(neigh *types.NodeInfoWrapper) error {
 }
 
 func sortNeighbors(ns []*types.NodeInfoWrapper) {
-	compareId := func(i, j int) bool { return ns[i].Id < ns[i].Id }
+	compareId := func(i, j int) bool { return ns[i].Id < ns[j].Id }
 	sort.Slice(ns, compareId)
 }
 
