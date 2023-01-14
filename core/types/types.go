@@ -3,6 +3,8 @@ package types
 import (
 	"fmt"
 	"local-fog/core/utils"
+
+	"golang.org/x/exp/slices"
 )
 
 type RequestType int
@@ -33,4 +35,8 @@ func CompareNode(n1, n2 *NodeInfoWrapper) int {
 	} else {
 		return 1
 	}
+}
+
+func FindNode(ns []*NodeInfoWrapper, n *NodInfoWrapper) (int, bool) {
+	return slices.BinarySearchFunc(ns, n, CompareNode)
 }
