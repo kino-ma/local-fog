@@ -46,7 +46,7 @@ func (n *Node) GetProgram(ctx context.Context, p *t.GetProgramRequest) (*t.GetPr
 }
 
 func (n *Node) UpdateNode(ctx context.Context, p *t.UpdateNodeRequest) (*t.UpdateNodeReply, error) {
-	log.Printf("updateNode: id = %+v\n", p)
+	log.Printf("updateNode: id = %+v, state = %v", p.Node, p.State)
 
 	return &t.UpdateNodeReply{}, nil
 }
