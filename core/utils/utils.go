@@ -53,3 +53,37 @@ func InsertSorted[T any](sortedTs []T, t T, compare func(x, y T) int) ([]T, int)
 	}
 	return sortedTs, i
 }
+
+// XorSlice returns xor of two soretd slices.
+func XorSlice[T any](s1, s2 []T, compare func(T, T) int) []T {
+	out := []T{}
+	j := 0
+
+	for _, x := range s1 {
+		for jj, y := range s2 {
+			res := compare(x, y)
+			if jj == j {
+				if res < 0 {
+					out = append(out, x)
+					break
+				} else if res == 0 {
+					continue
+				} else {
+					out = append(out, y)
+					break
+				}
+			} else {
+				if res < 0 {
+					j = jj - 1
+					break
+				} else if res == 0 {
+					continue
+				} else {
+					// never happens
+				}
+			}
+		}
+	}
+
+	return out
+}
