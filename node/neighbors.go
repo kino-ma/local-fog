@@ -36,6 +36,13 @@ func DeleteNeighbor(neigh *types.NodeInfoWrapper) error {
 	return ErrNeighborNotFound
 }
 
+func nodesXor(n1, n2 []*types.NodeInfoWrapper) []*types.NodeInfoWrapper {
+	sortNeighbors(n1)
+	sortNeighbors(n2)
+
+	return utils.XorSlice(n1, n2, types.CompareNode)
+}
+
 func sortNeighbors(ns []*types.NodeInfoWrapper) {
 	compareId := func(i, j int) bool { return ns[i].Id < ns[j].Id }
 	sort.Slice(ns, compareId)
