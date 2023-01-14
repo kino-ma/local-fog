@@ -52,4 +52,11 @@ func main() {
 	} else {
 		log.Printf("GetProgram: %v", gr)
 	}
+
+	ur, err := consumer.UpdateNode(&types.UpdateNodeRequest{})
+	if err != nil {
+		log.Printf("UpdateNode request failed: %v", err)
+	} else {
+		log.Printf("UpdateNode: %v", ur)
+	}
 }
