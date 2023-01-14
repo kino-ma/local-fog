@@ -7,10 +7,17 @@ import (
 	"local-fog/core/utils"
 	"log"
 	"sort"
+	"time"
 )
+
+const syncPeriod = time.Minute
 
 // Neighbors contains neighbors. Note: Many functions assume this slice to be sorted. Do not modify directly.
 var Neighbors []*types.NodeInfoWrapper
+var (
+	organizer    *types.NodeInfoWrapper
+	iAmOrganizer bool
+)
 
 var (
 	ErrNeighborNotFound = fmt.Errorf("neighbor with that id was not found")
@@ -45,15 +52,29 @@ func DeleteNeighbor(neigh *types.NodeInfoWrapper) error {
 	return ErrNeighborNotFound
 }
 
+func ContinuosDiscovery() {
+	ticker := time.NewTicker(time.Minute)
+	for range ticker.C {
+		periodicSync()
+	}
+}
+
 func periodicSync() {
-	nodes, err := core.Discover(16)
-	if err != nil {
-		err = fmt.Errorf("failed to discover: %w", err)
-		log.Printf("[ERR] %v", err)
-		return
+	if iAmOrganizer {
+		log.Print("I am organizer. Running discovery...")
+		nodes, err := core.Discover(16)
+		if err != nil {
+			err = fmt.Errorf("failed to discover: %w", err)
+			log.Printf("[ERR] %v", err)
+		}
+
+		PatchNeighbors(nodes)
+
+		o := chooseOrganizer(Neighbors)
+		iAmOrganizer = o.Id == info.Id
 	}
 
-	PatchNeighbors(nodes)
+	// do monitoring
 }
 
 func nodesXor(n1, n2 []*types.NodeInfoWrapper) []*types.NodeInfoWrapper {

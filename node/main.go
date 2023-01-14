@@ -9,7 +9,6 @@ import (
 )
 
 var info *types.NodeInfoWrapper
-var organizer *types.NodeInfoWrapper
 
 func main() {
 	node := &Node{}
@@ -38,12 +37,13 @@ func main() {
 	log.Printf("neighbors including self: %v", Neighbors)
 
 	organizer = chooseOrganizer(Neighbors)
-	if organizer.Id == info.Id {
+	iAmOrganizer = organizer.Id == info.Id
+	if iAmOrganizer {
 		log.Print("I am the organizer")
-		// go func (start periodic discovery)
 	} else {
 		log.Printf("node [%v] is the organizer", organizer.Id)
 	}
+	go ContinuosDiscovery()
 
 	err = RegisterAndServeMdns(uint64(nodeId), addr)
 	if err != nil {
