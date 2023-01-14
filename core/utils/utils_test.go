@@ -104,16 +104,16 @@ func TestXorSlice(t *testing.T) {
 		}
 	}()
 
-	// func() {
-	// 	// same slice
-	// 	s1 := []int{1, 2, 2, 3}
-	// 	s2 := []int{1, 1, 2, 3}
+	func() {
+		// same slice
+		s1 := []int{1, 2, 2, 3}
+		s2 := []int{1, 1, 2, 3}
 
-	// 	got := XorSlice(s1, s2, f)
-	// 	want := []int{}
+		got := XorSlice(s1, s2, f)
+		want := []int{}
 
-	// 	if slices.Compare(got, want) != 0 {
-	// 		t.Errorf("same slice failed: InsertSorted = %v, want %v", got, want)
-	// 	}
-	// }()
+		if slices.Compare(got, want) != 0 {
+			t.Errorf("same slice failed: InsertSorted = %v, want %v", got, want)
+		}
+	}()
 }
