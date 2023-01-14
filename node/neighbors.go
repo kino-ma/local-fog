@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"local-fog/core"
 	"local-fog/core/types"
 	"local-fog/core/utils"
+	"log"
 	"sort"
 )
 
@@ -21,6 +23,13 @@ func UpdateNeighbors(neighbors []*types.NodeInfoWrapper) {
 	Neighbors = neighbors
 }
 
+func PatchNeighbors(patch []*types.NodeInfoWrapper) {
+	ns := append(Neighbors, patch...)
+	sortNeighbors(ns)
+	ns = utils.RemoveDuplicates(ns, types.CompareNode)
+	Neighbors = ns
+}
+
 func InsertNeighbor(neigh *types.NodeInfoWrapper) {
 	Neighbors, _ = utils.InsertSorted(Neighbors, neigh, types.CompareNode)
 }
@@ -34,6 +43,17 @@ func DeleteNeighbor(neigh *types.NodeInfoWrapper) error {
 	}
 
 	return ErrNeighborNotFound
+}
+
+func periodicSync() {
+	nodes, err := core.Discover(16)
+	if err != nil {
+		err = fmt.Errorf("failed to discover: %w", err)
+		log.Printf("[ERR] %v", err)
+		return
+	}
+
+	PatchNeighbors(nodes)
 }
 
 func nodesXor(n1, n2 []*types.NodeInfoWrapper) []*types.NodeInfoWrapper {
