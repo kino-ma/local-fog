@@ -41,9 +41,11 @@ func Uint32ToIp(n uint32) net.IP {
 	return ip
 }
 
-func InsertSorted[T any](sortedTs []T, t T, compare func(x, y T) int) int {
+func InsertSorted[T any](sortedTs []T, t T, compare func(x, y T) int) ([]T, int) {
+	var dummy T
+	sortedTs = append(sortedTs, dummy)
 	i, _ := slices.BinarySearchFunc(sortedTs, t, compare)
-	sortedTs = append(sortedTs[:i], t)
-	sortedTs = append(sortedTs, sortedTs[i:]...)
-	return i
+	copy(sortedTs[i+1:], sortedTs[i:])
+	sortedTs[i] = t
+	return sortedTs, i
 }

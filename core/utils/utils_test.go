@@ -19,10 +19,10 @@ func TestInsertSorted(t *testing.T) {
 		}
 	}
 
-	InsertSorted(s, x, f)
+	got, _ := InsertSorted(s, x, f)
 	want := []int{1, 2, 3}
 
-	if slices.Compare(s, want) != 0 {
-		t.Errorf("InsertSorted = %v, want %v", s, want)
+	if slices.Compare(got, want) != 0 {
+		t.Errorf("InsertSorted = %v, want %v", got, want)
 	}
 }
