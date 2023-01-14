@@ -22,7 +22,7 @@ type NodeInfoWrapper NodeInfo
 
 func (i *NodeInfoWrapper) String() string {
 	addr := utils.Uint32ToIp(i.AddrV4)
-	return fmt.Sprintf("node id:%v addr_v4:%v", i.Id, addr)
+	return fmt.Sprintf("node id:%x addr_v4:%v", i.Id, addr)
 }
 
 func CompareNode(n1, n2 *NodeInfoWrapper) int {
