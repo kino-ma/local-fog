@@ -37,6 +37,6 @@ func CompareNode(n1, n2 *NodeInfoWrapper) int {
 	}
 }
 
-func FindNode(ns []*NodeInfoWrapper, n *NodInfoWrapper) (int, bool) {
+func FindNode(ns []*NodeInfoWrapper, n *NodeInfoWrapper) (int, bool) {
 	return slices.BinarySearchFunc(ns, n, CompareNode)
 }
