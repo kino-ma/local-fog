@@ -8,6 +8,7 @@ service LocalFog {
   rpc Sync(SyncRequest) returns (SyncReply) {}
   rpc Call(CallRequest) returns (CallReply) {}
   rpc GetProgram(GetProgramRequest) returns (GetProgramReply) {}
+  rpc UpdateNode(UpdateNodeRequest) returns (UpdateNodeReply) {}
 }
 
 message NodeInfo {
@@ -20,7 +21,7 @@ message PingRequest {}
 message PingReply {}
 
 message SyncRequest {}
-message SyncReply {}
+message SyncReply { repeated NodeInfo nodes = 1; }
 
 message CallRequest {
   uint64 app_id = 1;
@@ -30,3 +31,14 @@ message CallReply { bytes output = 1; }
 
 message GetProgramRequest { uint64 app_id = 1; }
 message GetProgramReply {}
+
+enum NodeState {
+  JOINED = 0;
+  LEFT = 1;
+}
+
+message UpdateNodeRequest {
+  NodeInfo node = 1;
+  NodeState state = 2;
+}
+message UpdateNodeReply {}
