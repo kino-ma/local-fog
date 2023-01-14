@@ -26,6 +26,7 @@ type LocalFogClient interface {
 	Sync(ctx context.Context, in *SyncRequest, opts ...grpc.CallOption) (*SyncReply, error)
 	Call(ctx context.Context, in *CallRequest, opts ...grpc.CallOption) (*CallReply, error)
 	GetProgram(ctx context.Context, in *GetProgramRequest, opts ...grpc.CallOption) (*GetProgramReply, error)
+	UpdateNode(ctx context.Context, in *UpdateNodeRequest, opts ...grpc.CallOption) (*UpdateNodeReply, error)
 }
 
 type localFogClient struct {
@@ -72,6 +73,15 @@ func (c *localFogClient) GetProgram(ctx context.Context, in *GetProgramRequest, 
 	return out, nil
 }
 
+func (c *localFogClient) UpdateNode(ctx context.Context, in *UpdateNodeRequest, opts ...grpc.CallOption) (*UpdateNodeReply, error) {
+	out := new(UpdateNodeReply)
+	err := c.cc.Invoke(ctx, "/tutorial.LocalFog/UpdateNode", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LocalFogServer is the server API for LocalFog service.
 // All implementations must embed UnimplementedLocalFogServer
 // for forward compatibility
@@ -80,6 +90,7 @@ type LocalFogServer interface {
 	Sync(context.Context, *SyncRequest) (*SyncReply, error)
 	Call(context.Context, *CallRequest) (*CallReply, error)
 	GetProgram(context.Context, *GetProgramRequest) (*GetProgramReply, error)
+	UpdateNode(context.Context, *UpdateNodeRequest) (*UpdateNodeReply, error)
 	mustEmbedUnimplementedLocalFogServer()
 }
 
@@ -98,6 +109,9 @@ func (UnimplementedLocalFogServer) Call(context.Context, *CallRequest) (*CallRep
 }
 func (UnimplementedLocalFogServer) GetProgram(context.Context, *GetProgramRequest) (*GetProgramReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProgram not implemented")
+}
+func (UnimplementedLocalFogServer) UpdateNode(context.Context, *UpdateNodeRequest) (*UpdateNodeReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateNode not implemented")
 }
 func (UnimplementedLocalFogServer) mustEmbedUnimplementedLocalFogServer() {}
 
@@ -184,6 +198,24 @@ func _LocalFog_GetProgram_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LocalFog_UpdateNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateNodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LocalFogServer).UpdateNode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/tutorial.LocalFog/UpdateNode",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LocalFogServer).UpdateNode(ctx, req.(*UpdateNodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LocalFog_ServiceDesc is the grpc.ServiceDesc for LocalFog service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -206,6 +238,10 @@ var LocalFog_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProgram",
 			Handler:    _LocalFog_GetProgram_Handler,
+		},
+		{
+			MethodName: "UpdateNode",
+			Handler:    _LocalFog_UpdateNode_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
