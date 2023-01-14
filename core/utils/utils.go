@@ -59,31 +59,42 @@ func InsertSorted[T any](sortedTs []T, t T, compare func(x, y T) int) ([]T, int)
 func XorSlice[T any](s1, s2 []T, compare func(T, T) int) []T {
 	out := []T{}
 	i, j := 0, 0
-	var x T
 
-	for i, x = range s1 {
-		if j >= len(s2) {
+	for {
+		if i >= len(s1) {
+			log.Printf("j[%v] is greater than len", j)
 			i--
 			break
 		}
 
-		y := s2[j]
+		if j >= len(s2) {
+			log.Printf("j[%v] is greater than len", j)
+			i--
+			break
+		}
+
+		x, y := s1[i], s2[j]
 		res := compare(x, y)
 
 		if res < 0 {
+			log.Printf("x %v[%v] < y %v[%v]", x, i, y, j)
 			out = append(out, x)
+			i += 1
 			continue
 		} else if 0 < res {
+			log.Printf("x %v[%v] > y %v[%v]", x, i, y, j)
 			out = append(out, y)
 			j += 1
 			continue
 		}
 
-		for j+1 < len(s2) && compare(s2[j], s2[j+1]) == 0 {
+		log.Printf("x %v[%v] == y %v[%v]", x, i, y, j)
+
+		i++
+		j++
+		for j < len(s2) && compare(s2[j-1], s2[j]) == 0 {
 			j++
 		}
-
-		j++
 	}
 
 	log.Print(i, j, out)
