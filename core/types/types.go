@@ -24,3 +24,13 @@ func (i *NodeInfoWrapper) String() string {
 	addr := utils.Uint32ToIp(i.AddrV4)
 	return fmt.Sprintf("node id:%v addr_v4:%v", i.Id, addr)
 }
+
+func CompareNode(n1, n2 *NodeInfoWrapper) int {
+	if n1.Id < n2.Id {
+		return -1
+	} else if n1.Id == n2.Id {
+		return 0
+	} else {
+		return 1
+	}
+}
