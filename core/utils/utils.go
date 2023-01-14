@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"net"
+
+	"golang.org/x/exp/slices"
 )
 
 func ReadByte(r io.Reader) (byte, error) {
@@ -37,4 +39,11 @@ func Uint32ToIp(n uint32) net.IP {
 	ip := make(net.IP, 4)
 	binary.BigEndian.PutUint32(ip, n)
 	return ip
+}
+
+func InsertSorted[T any](sortedTs []T, t T, compare func(x, y T) int) int {
+	i, _ := slices.BinarySearchFunc(sortedTs, t, compare)
+	sortedTs = append(sortedTs[:i], t)
+	sortedTs = append(sortedTs, sortedTs[i:]...)
+	return i
 }
