@@ -48,5 +48,17 @@ func (n *Node) GetProgram(ctx context.Context, p *t.GetProgramRequest) (*t.GetPr
 func (n *Node) UpdateNode(ctx context.Context, p *t.UpdateNodeRequest) (*t.UpdateNodeReply, error) {
 	log.Printf("updateNode: id = %+v, state = %v", p.Node, p.State)
 
+	switch p.State {
+	case t.NodeState_JOINED:
+		nn := (*t.NodeInfoWrapper)(p.Node)
+		InsertNeighbor(nn)
+	case t.NodeState_LEFT:
+		nn := (*t.NodeInfoWrapper)(p.Node)
+		err := DeleteNeighbor(nn)
+		if err != nil {
+			log.Printf("[WARN] Deletion of node [%v] was requested, but not found", nn)
+		}
+	}
+
 	return &t.UpdateNodeReply{}, nil
 }
