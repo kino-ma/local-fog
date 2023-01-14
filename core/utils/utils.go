@@ -61,6 +61,13 @@ func XorSlice[T any](s1, s2 []T, compare func(T, T) int) []T {
 	i, j := 0, 0
 
 	for {
+		for i != 0 && i < len(s1) && compare(s1[i-1], s1[i]) == 0 {
+			i++
+		}
+		for j != 0 && j < len(s2) && compare(s2[j-1], s2[j]) == 0 {
+			j++
+		}
+
 		if i >= len(s1) {
 			log.Printf("j[%v] is greater than len", j)
 			i--
@@ -89,12 +96,8 @@ func XorSlice[T any](s1, s2 []T, compare func(T, T) int) []T {
 		}
 
 		log.Printf("x %v[%v] == y %v[%v]", x, i, y, j)
-
 		i++
 		j++
-		for j < len(s2) && compare(s2[j-1], s2[j]) == 0 {
-			j++
-		}
 	}
 
 	log.Print(i, j, out)
