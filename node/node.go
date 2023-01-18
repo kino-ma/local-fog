@@ -26,7 +26,7 @@ func (n *Node) Sync(ctx context.Context, p *t.SyncRequest) (*t.SyncReply, error)
 	nodes := p.Nodes
 
 	for _, n := range nodes {
-		nn := t.NodeInfoWrapper(n)
+		nn := (*t.NodeInfoWrapper)(n)
 		InsertNeighbor(nn)
 	}
 
