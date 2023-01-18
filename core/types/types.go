@@ -40,3 +40,13 @@ func CompareNode(n1, n2 *NodeInfoWrapper) int {
 func FindNode(ns []*NodeInfoWrapper, n *NodeInfoWrapper) (int, bool) {
 	return slices.BinarySearchFunc(ns, n, CompareNode)
 }
+
+func UnwrapNodeInfos(nodes []*NodeInfoWrapper) []*NodeInfo {
+	out := make([]*NodeInfo, len(nodes))
+
+	for i, n := range nodes {
+		out[i] = (*NodeInfo)(n)
+	}
+
+	return out
+}
