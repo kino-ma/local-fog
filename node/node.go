@@ -21,6 +21,16 @@ func (n *Node) Ping(ctx context.Context, p *t.PingRequest) (*t.PingReply, error)
 
 func (n *Node) Sync(ctx context.Context, p *t.SyncRequest) (*t.SyncReply, error) {
 	fmt.Printf("sync\n")
+	log.Printf("before: %v", Neighbors)
+
+	nodes := p.Nodes
+
+	for _, n := range nodes {
+		nn := t.NodeInfoWrapper(n)
+		InsertNeighbor(nn)
+	}
+
+	log.Printf("after: %v", Neighbors)
 
 	return &t.SyncReply{}, nil
 }
