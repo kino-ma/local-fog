@@ -32,7 +32,11 @@ func (n *Node) Sync(ctx context.Context, p *t.SyncRequest) (*t.SyncReply, error)
 
 	log.Printf("after: %v", Neighbors)
 
-	return &t.SyncReply{}, nil
+	outNodes := t.UnwrapNodeInfos(Neighbors)
+
+	return &t.SyncReply{
+		Nodes: outNodes,
+	}, nil
 }
 
 func (n *Node) Call(ctx context.Context, p *t.CallRequest) (*t.CallReply, error) {
