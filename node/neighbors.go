@@ -117,8 +117,8 @@ func chooseMonitorTarget(ns []*types.NodeInfoWrapper, selfId uint64) *types.Node
 	selfIdx, _ := types.FindNode(Neighbors, self)
 
 	targetIdx := selfIdx - 1
-	if selfIdx < 0 {
-		selfIdx = len(Neighbors) - 1
+	if targetIdx < 0 {
+		targetIdx = len(Neighbors) - 1
 	}
 
 	return ns[targetIdx]
