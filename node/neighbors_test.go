@@ -124,7 +124,7 @@ func TestChooseMonitorTarget(t *testing.T) {
 	}()
 }
 
-func TestPatchNeighbors(t *testing.T) {
+func TestPatchNodes(t *testing.T) {
 	comp := func(s1, s2 []*types.NodeInfoWrapper) bool {
 		if len(s1) != len(s2) {
 			return false
@@ -151,7 +151,7 @@ func TestPatchNeighbors(t *testing.T) {
 		s1 := []*types.NodeInfoWrapper{n1, n2, n3}
 		s2 := []*types.NodeInfoWrapper{n4, n5, n6}
 
-		got := PatchNeighbors(s1, s2)
+		got := patchNodes(s1, s2)
 		want := []*types.NodeInfoWrapper{n1, n2, n3, n4, n5, n6}
 
 		if !comp(want, got) {
@@ -170,7 +170,7 @@ func TestPatchNeighbors(t *testing.T) {
 		s1 := []*types.NodeInfoWrapper{n1, n2, n3}
 		s2 := []*types.NodeInfoWrapper{n2, n4, n5}
 
-		got := PatchNeighbors(s1, s2)
+		got := patchNodes(s1, s2)
 		want := []*types.NodeInfoWrapper{n1, n2, n3, n4, n5}
 
 		if !comp(want, got) {
@@ -187,7 +187,7 @@ func TestPatchNeighbors(t *testing.T) {
 		s1 := []*types.NodeInfoWrapper{n1, n2, n3}
 		s2 := []*types.NodeInfoWrapper{n1, n2, n3}
 
-		got := PatchNeighbors(s1, s2)
+		got := patchNodes(s1, s2)
 		want := []*types.NodeInfoWrapper{n1, n2, n3}
 
 		if !comp(want, got) {
