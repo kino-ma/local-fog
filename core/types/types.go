@@ -50,3 +50,13 @@ func UnwrapNodeInfos(nodes []*NodeInfoWrapper) []*NodeInfo {
 
 	return out
 }
+
+func WrapNodeInfos(nodes []*NodeInfo) []*NodeInfoWrapper {
+	out := make([]*NodeInfoWrapper, len(nodes))
+
+	for i, n := range nodes {
+		out[i] = (*NodeInfoWrapper)(n)
+	}
+
+	return out
+}
