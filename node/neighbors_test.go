@@ -69,3 +69,57 @@ func TestInsetNeighbor(t *testing.T) {
 		}
 	}()
 }
+
+func TestChooseMonitorTarget(t *testing.T) {
+	func() {
+		// self is n2
+		n1 := &types.NodeInfoWrapper{Id: 1}
+		n2 := &types.NodeInfoWrapper{Id: 2}
+		n3 := &types.NodeInfoWrapper{Id: 3}
+		s := []*types.NodeInfoWrapper{n1, n2, n3}
+
+		UpdateNeighbors(s)
+
+		self := n2
+		want := n1
+		got := chooseMonitorTarget(s, self.Id)
+
+		if types.CompareNode(want, got) != 0 {
+			t.Errorf("self is n2: chooseMonitorTarget = %v, want %v", got, want)
+		}
+	}()
+
+	func() {
+		// self is n1
+		n1 := &types.NodeInfoWrapper{Id: 1}
+		n2 := &types.NodeInfoWrapper{Id: 2}
+		n3 := &types.NodeInfoWrapper{Id: 3}
+		s := []*types.NodeInfoWrapper{n1, n2, n3}
+
+		UpdateNeighbors(s)
+
+		self := n1
+		want := n3
+		got := chooseMonitorTarget(s, self.Id)
+
+		if types.CompareNode(want, got) != 0 {
+			t.Errorf("self is n1: chooseMonitorTarget = %v, want %v", got, want)
+		}
+	}()
+
+	func() {
+		// length is 1
+		n1 := &types.NodeInfoWrapper{Id: 1}
+		s := []*types.NodeInfoWrapper{n1}
+
+		UpdateNeighbors(s)
+
+		self := n1
+		want := (*types.NodeInfoWrapper)(nil)
+		got := chooseMonitorTarget(s, self.Id)
+
+		if types.CompareNode(want, got) != 0 {
+			t.Errorf("length is 1: hooseMonitorTarget = %v, want %v", got, want)
+		}
+	}()
+}
