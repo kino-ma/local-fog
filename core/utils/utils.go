@@ -48,7 +48,7 @@ func RemoveIndex[T any](s []T, i int) []T {
 }
 
 func RemoveDuplicates[T any](s []T, compare func(x, y T) int) []T {
-	out := make([]T, 0, len(s))
+	out := make([]T, len(s))
 	copy(out, s)
 
 	for i := len(out) - 1; i > 0; i-- {
