@@ -48,15 +48,18 @@ func RemoveIndex[T any](s []T, i int) []T {
 }
 
 func RemoveDuplicates[T any](s []T, compare func(x, y T) int) []T {
-	for i := 1; i < len(s)-1; i++ {
-		x, y := s[i], s[i+1]
+	out := make([]T, 0, len(s))
+	copy(out, s)
+
+	for i := len(out) - 1; i > 0; i-- {
+		x, y := out[i], out[i-1]
 
 		if compare(x, y) == 0 {
-			s = RemoveIndex(s, i)
+			out = RemoveIndex(out, i)
 		}
 	}
 
-	return s
+	return out
 }
 
 func InsertSorted[T any](sortedTs []T, t T, compare func(x, y T) int) ([]T, int) {
