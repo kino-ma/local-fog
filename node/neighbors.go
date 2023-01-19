@@ -38,14 +38,13 @@ func InsertNeighbor(neigh *types.NodeInfoWrapper) {
 }
 
 func DeleteNeighbor(neigh *types.NodeInfoWrapper) error {
-	for i, n := range Neighbors {
-		if n.Id == neigh.Id {
-			Neighbors = append(Neighbors[:i], Neighbors[i+1:]...)
-			return nil
-		}
+	i, found := types.FindNode(Neighbors, neigh)
+	if !found {
+		return ErrNeighborNotFound
 	}
 
-	return ErrNeighborNotFound
+	Neighbors = utils.RemoveIndex(Neighbors, i)
+	return nil
 }
 
 func PeriodicTask() {
