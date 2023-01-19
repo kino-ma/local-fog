@@ -113,6 +113,10 @@ func chooseOrganizer(ns []*types.NodeInfoWrapper) *types.NodeInfoWrapper {
 }
 
 func chooseMonitorTarget(ns []*types.NodeInfoWrapper, selfId uint64) *types.NodeInfoWrapper {
+	if len(ns) == 1 {
+		return nil
+	}
+
 	self := &types.NodeInfoWrapper{Id: selfId}
 	selfIdx, _ := types.FindNode(Neighbors, self)
 
