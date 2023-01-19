@@ -118,7 +118,7 @@ func TestChooseMonitorTarget(t *testing.T) {
 		want := (*types.NodeInfoWrapper)(nil)
 		got := chooseMonitorTarget(s, self.Id)
 
-		if types.CompareNode(want, got) != 0 {
+		if want != got {
 			t.Errorf("length is 1: hooseMonitorTarget = %v, want %v", got, want)
 		}
 	}()
