@@ -43,7 +43,7 @@ func main() {
 	} else {
 		log.Printf("node [%v] is the organizer", organizer.Id)
 	}
-	go ContinuosDiscovery()
+	go PeriodicTask()
 
 	err = RegisterAndServeMdns(uint64(nodeId), addr)
 	if err != nil {

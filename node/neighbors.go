@@ -52,15 +52,15 @@ func DeleteNeighbor(neigh *types.NodeInfoWrapper) error {
 	return ErrNeighborNotFound
 }
 
-func ContinuosDiscovery() {
+func PeriodicTask() {
 	ticker := time.NewTicker(syncPeriod)
 	for range ticker.C {
 		log.Print("ticker")
-		periodicSync()
+		organizerDiscovery()
 	}
 }
 
-func periodicSync() {
+func organizerDiscovery() {
 	if iAmOrganizer {
 		log.Print("I am organizer. Running discovery...")
 		nodes, err := core.Discover(16)
