@@ -57,6 +57,7 @@ func PeriodicTask() {
 	for range ticker.C {
 		log.Print("ticker")
 		organizerDiscovery()
+		pingTarget()
 	}
 }
 
@@ -74,8 +75,25 @@ func organizerDiscovery() {
 		organizer = chooseOrganizer(Neighbors)
 		iAmOrganizer = organizer.Id == info.Id
 	}
+}
 
-	// do monitoring
+func pingTarget() {
+	target := chooseMonitorTarget(Neighbors, info.Id)
+
+	addr := utils.Uint32ToIp((target.AddrV4))
+	consumer, err := core.Connect(addr.String(), core.DEFAULT_PORT)
+
+	if err != nil {
+		log.Printf("[ERROR] pingTarget: failed to connect to the server: %v", err)
+		return
+	}
+
+	pr, err := consumer.Ping(&types.PingRequest{})
+	if err != nil {
+		log.Printf("[ERROR] Ping request failed: %v", err)
+	} else {
+		log.Printf("pingTarget success: %v", pr)
+	}
 }
 
 func nodesXor(n1, n2 []*types.NodeInfoWrapper) []*types.NodeInfoWrapper {
@@ -92,4 +110,16 @@ func sortNeighbors(ns []*types.NodeInfoWrapper) {
 
 func chooseOrganizer(ns []*types.NodeInfoWrapper) *types.NodeInfoWrapper {
 	return ns[0]
+}
+
+func chooseMonitorTarget(ns []*types.NodeInfoWrapper, selfId uint64) *types.NodeInfoWrapper {
+	self := &types.NodeInfoWrapper{Id: selfId}
+	selfIdx, _ := types.FindNode(Neighbors, self)
+
+	targetIdx := selfIdx - 1
+	if selfIdx < 0 {
+		selfIdx = len(Neighbors) - 1
+	}
+
+	return ns[targetIdx]
 }
