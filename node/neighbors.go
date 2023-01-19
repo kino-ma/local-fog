@@ -182,7 +182,7 @@ func chooseMonitorTarget(ns []*types.NodeInfoWrapper, selfId uint64) *types.Node
 }
 
 func patchNodes(target, patch []*types.NodeInfoWrapper) []*types.NodeInfoWrapper {
-	out := make([]*types.NodeInfoWrapper, 0, len(target)+len(patch))
+	out := make([]*types.NodeInfoWrapper, len(target))
 	copy(out, target)
 	out = append(out, patch...)
 	sortNeighbors(out)
