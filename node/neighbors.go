@@ -80,6 +80,11 @@ func organizerDiscovery() {
 func pingTarget() {
 	target := chooseMonitorTarget(Neighbors, info.Id)
 
+	if target == nil {
+		log.Printf("[INFO] no need to monitor. Skipping")
+		return
+	}
+
 	addr := utils.Uint32ToIp((target.AddrV4))
 	consumer, err := core.Connect(addr.String(), core.DEFAULT_PORT)
 
@@ -92,7 +97,7 @@ func pingTarget() {
 	if err != nil {
 		log.Printf("[ERROR] Ping request failed: %v", err)
 	} else {
-		log.Printf("pingTarget success: %v", pr)
+		log.Printf("pingTarget success: %v", target)
 	}
 }
 
