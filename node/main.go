@@ -36,8 +36,8 @@ func main() {
 	InsertNeighbor(info)
 	log.Printf("neighbors including self: %v", Neighbors)
 
-	organizer = chooseOrganizer(Neighbors)
-	iAmOrganizer = organizer.Id == info.Id
+	organizer := chooseOrganizer(Neighbors)
+	iAmOrganizer := organizer.Id == info.Id
 	if iAmOrganizer {
 		log.Print("I am the organizer")
 	} else {

@@ -14,10 +14,6 @@ const syncPeriod = time.Minute
 
 // Neighbors contains neighbors. Note: Many functions assume this slice to be sorted. Do not modify directly.
 var Neighbors []*types.NodeInfoWrapper
-var (
-	organizer    *types.NodeInfoWrapper
-	iAmOrganizer bool
-)
 
 var (
 	ErrNeighborNotFound = fmt.Errorf("neighbor with that id was not found")
@@ -62,6 +58,9 @@ func PeriodicTask() {
 }
 
 func organizerDiscovery() {
+	organizer := chooseOrganizer(Neighbors)
+	iAmOrganizer := organizer.Id == info.Id
+
 	if iAmOrganizer {
 		log.Print("I am organizer. Running discovery...")
 		nodes, err := core.Discover(16)
@@ -71,9 +70,6 @@ func organizerDiscovery() {
 		}
 
 		PatchNeighbors(nodes)
-
-		organizer = chooseOrganizer(Neighbors)
-		iAmOrganizer = organizer.Id == info.Id
 	}
 }
 
