@@ -145,8 +145,8 @@ func TestPatchNodes(t *testing.T) {
 		n2 := &types.NodeInfoWrapper{Id: 2}
 		n3 := &types.NodeInfoWrapper{Id: 3}
 		n4 := &types.NodeInfoWrapper{Id: 4}
-		n5 := &types.NodeInfoWrapper{Id: 1}
-		n6 := &types.NodeInfoWrapper{Id: 1}
+		n5 := &types.NodeInfoWrapper{Id: 5}
+		n6 := &types.NodeInfoWrapper{Id: 6}
 
 		s1 := []*types.NodeInfoWrapper{n1, n2, n3}
 		s2 := []*types.NodeInfoWrapper{n4, n5, n6}
@@ -165,7 +165,7 @@ func TestPatchNodes(t *testing.T) {
 		n2 := &types.NodeInfoWrapper{Id: 2}
 		n3 := &types.NodeInfoWrapper{Id: 3}
 		n4 := &types.NodeInfoWrapper{Id: 4}
-		n5 := &types.NodeInfoWrapper{Id: 1}
+		n5 := &types.NodeInfoWrapper{Id: 5}
 
 		s1 := []*types.NodeInfoWrapper{n1, n2, n3}
 		s2 := []*types.NodeInfoWrapper{n2, n4, n5}
