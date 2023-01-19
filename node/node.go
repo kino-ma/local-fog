@@ -63,7 +63,9 @@ func (n *Node) UpdateNode(ctx context.Context, p *t.UpdateNodeRequest) (*t.Updat
 	log.Printf("updateNode: id = %+v, state = %v", p.Node, p.State)
 
 	if p.Node == nil {
-		return nil, fmt.Errorf("parameter 'Node' is nil")
+		err := fmt.Errorf("parameter 'Node' is nil")
+		log.Printf("[ERROR] %v", err)
+		return nil, err
 	}
 
 	switch p.State {
