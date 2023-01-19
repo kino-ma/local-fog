@@ -70,6 +70,16 @@ func organizerDiscovery() {
 		}
 
 		PatchNeighbors(nodes)
+
+		organizer = chooseOrganizer(Neighbors)
+		iAmOrganizer = organizer.Id == info.Id
+
+		if iAmOrganizer {
+			err := syncAll(Neighbors)
+			if err != nil {
+				log.Printf("[ERROR] %v", err)
+			}
+		}
 	}
 }
 
@@ -89,12 +99,55 @@ func pingTarget() {
 		return
 	}
 
-	pr, err := consumer.Ping(&types.PingRequest{})
+	_, err = consumer.Ping(&types.PingRequest{})
 	if err != nil {
 		log.Printf("[ERROR] Ping request failed: %v", err)
 	} else {
 		log.Printf("pingTarget success: %v", target)
 	}
+}
+
+func syncAll(ns []*types.NodeInfoWrapper) error {
+	errs := make([]error, 0, len(ns))
+
+	for _, n := range ns {
+		addr := utils.Uint32ToIp(n.AddrV4)
+		consumer, err := core.Connect(addr.String(), core.DEFAULT_PORT)
+		if err != nil {
+			err = fmt.Errorf("syncAll: failed to connect to node [%v]: %w", n.Id, err)
+			errs = append(errs, err)
+			continue
+		}
+
+		nodesToSend := types.UnwrapNodeInfos(Neighbors)
+		sReq := &types.SyncRequest{
+			Nodes: nodesToSend,
+		}
+
+		sRep, err := consumer.Sync(sReq)
+		if err != nil {
+			err = fmt.Errorf("syncAll: failed to sync with node [%v]: %w", n.Id, err)
+			errs = append(errs, err)
+			continue
+		}
+
+		nodes := types.WrapNodeInfos(sRep.Nodes)
+		PatchNeighbors(nodes)
+
+		log.Printf("synced with node [%v]", n.Id)
+	}
+
+	if len(errs) == 0 {
+		return nil
+	}
+
+	// if there is any errors
+
+	errString := ""
+	for _, err := range errs {
+		errString += err.Error() + ", "
+	}
+	return fmt.Errorf("syncAll: 1 ore more errors occured while syncing: %v", errString)
 }
 
 func nodesXor(n1, n2 []*types.NodeInfoWrapper) []*types.NodeInfoWrapper {
