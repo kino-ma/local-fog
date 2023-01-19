@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"local-fog/core"
 	"local-fog/core/types"
+	"local-fog/core/types/helper"
 	"local-fog/core/utils"
 	"log"
 	"sort"
@@ -101,52 +102,41 @@ func pingTarget() {
 	_, err = consumer.Ping(&types.PingRequest{})
 	if err != nil {
 		log.Printf("[ERROR] Ping request failed: %v", err)
+		log.Printf("start removing node [%x]", target.Id)
+		// start remove
 	} else {
 		log.Printf("pingTarget success: %v", target)
 	}
 }
 
 func syncAll(ns []*types.NodeInfoWrapper) error {
-	errs := make([]error, 0, len(ns))
-
-	for _, n := range ns {
-		addr := utils.Uint32ToIp(n.AddrV4)
-		consumer, err := core.Connect(addr.String(), core.DEFAULT_PORT)
-		if err != nil {
-			err = fmt.Errorf("syncAll: failed to connect to node [%v]: %w", n.Id, err)
-			errs = append(errs, err)
-			continue
-		}
-
+	syncReq := func(n *types.NodeInfoWrapper, consumer core.FogConsumer) error {
 		nodesToSend := types.UnwrapNodeInfos(Neighbors)
+
 		sReq := &types.SyncRequest{
 			Nodes: nodesToSend,
 		}
 
 		sRep, err := consumer.Sync(sReq)
 		if err != nil {
-			err = fmt.Errorf("syncAll: failed to sync with node [%v]: %w", n.Id, err)
-			errs = append(errs, err)
-			continue
+			err = fmt.Errorf("anonymous sync: failed to sync with node [%v]: %w", n.Id, err)
+			return err
 		}
 
 		nodes := types.WrapNodeInfos(sRep.Nodes)
 		PatchNeighbors(nodes)
 
 		log.Printf("synced with node [%v]", n.Id)
-	}
-
-	if len(errs) == 0 {
 		return nil
 	}
 
-	// if there is any errors
+	err := helper.RequestForAllNode(ns, syncReq)
 
-	errString := ""
-	for _, err := range errs {
-		errString += err.Error() + ", "
+	if err != nil {
+		return fmt.Errorf("syncAll: 1 ore more errors occured while syncing: %v", err)
 	}
-	return fmt.Errorf("syncAll: 1 ore more errors occured while syncing: %v", errString)
+
+	return nil
 }
 
 func nodesXor(n1, n2 []*types.NodeInfoWrapper) []*types.NodeInfoWrapper {
