@@ -26,11 +26,10 @@ func UpdateNeighbors(neighbors []*types.NodeInfoWrapper) {
 	Neighbors = neighbors
 }
 
-func PatchNeighbors(patch []*types.NodeInfoWrapper) {
-	ns := append(Neighbors, patch...)
-	sortNeighbors(ns)
-	ns = utils.RemoveDuplicates(ns, types.CompareNode)
-	Neighbors = ns
+func PatchNeighbors(neighbors []*types.NodeInfoWrapper) {
+	sortNeighbors(neighbors)
+	ns := patchNodes(Neighbors, neighbors)
+	UpdateNeighbors(ns)
 }
 
 func InsertNeighbor(neigh *types.NodeInfoWrapper) {
@@ -180,4 +179,13 @@ func chooseMonitorTarget(ns []*types.NodeInfoWrapper, selfId uint64) *types.Node
 	}
 
 	return ns[targetIdx]
+}
+
+func patchNodes(target, patch []*types.NodeInfoWrapper) []*types.NodeInfoWrapper {
+	out := make([]*types.NodeInfoWrapper, 0, len(target)+len(patch))
+	copy(out, target)
+	out = append(out, patch...)
+	sortNeighbors(out)
+	out = utils.RemoveDuplicates(out, types.CompareNode)
+	return out
 }
