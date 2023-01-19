@@ -2,6 +2,7 @@ package main
 
 import (
 	"local-fog/core/types"
+	"local-fog/core/utils"
 	"testing"
 )
 
@@ -192,6 +193,55 @@ func TestPatchNodes(t *testing.T) {
 
 		if !comp(want, got) {
 			t.Errorf("all common nodes: chooseMonitorTarget = %v, want %v", got, want)
+		}
+	}()
+}
+
+func TestRemoveNodeDuplicates(t *testing.T) {
+	comp := func(s1, s2 []*types.NodeInfoWrapper) bool {
+		if len(s1) != len(s2) {
+			return false
+		}
+
+		for i := range s1 {
+			if types.CompareNode(s1[i], s2[i]) != 0 {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	func() {
+		// 1 duplicates
+		n1 := &types.NodeInfoWrapper{Id: 1}
+		n2 := &types.NodeInfoWrapper{Id: 2}
+		n3 := &types.NodeInfoWrapper{Id: 3}
+
+		s := []*types.NodeInfoWrapper{n1, n2, n2, n3}
+
+		got := utils.RemoveDuplicates(s, types.CompareNode)
+		want := []*types.NodeInfoWrapper{n1, n2, n3}
+
+		if !comp(want, got) {
+			t.Errorf("1 duplicates: RemoveDuplicates = %v, want %v", got, want)
+		}
+	}()
+
+	func() {
+		// 2 duplicates
+		n1 := &types.NodeInfoWrapper{Id: 1}
+		n2 := &types.NodeInfoWrapper{Id: 2}
+		n3 := &types.NodeInfoWrapper{Id: 3}
+		n4 := &types.NodeInfoWrapper{Id: 4}
+
+		s := []*types.NodeInfoWrapper{n1, n2, n2, n3, n4, n4}
+
+		got := utils.RemoveDuplicates(s, types.CompareNode)
+		want := []*types.NodeInfoWrapper{n1, n2, n3, n4}
+
+		if !comp(want, got) {
+			t.Errorf("2 duplicates: RemoveDuplicates = %v, want %v", got, want)
 		}
 	}()
 }
