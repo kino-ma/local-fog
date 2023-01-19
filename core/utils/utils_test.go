@@ -117,3 +117,51 @@ func TestXorSlice(t *testing.T) {
 		}
 	}()
 }
+
+func TestRemoveDuplicates(t *testing.T) {
+	f := func(x, y int) int {
+		if x < y {
+			return -1
+		} else if x == y {
+			return 0
+		} else {
+			return 1
+		}
+	}
+
+	func() {
+		// 1 duplicates
+		s := []int{1, 2, 2, 3}
+
+		got := RemoveDuplicates(s, f)
+		want := []int{1, 2, 3}
+
+		if slices.Compare(got, want) != 0 {
+			t.Errorf("1 duplicates failed: RemoveDuplicates = %v, want %v", got, want)
+		}
+	}()
+
+	func() {
+		// 2 duplicates
+		s := []int{1, 2, 2, 3, 4, 4}
+
+		got := RemoveDuplicates(s, f)
+		want := []int{1, 2, 3, 4}
+
+		if slices.Compare(got, want) != 0 {
+			t.Errorf("2 duplicates failed: RemoveDuplicates = %v, want %v", got, want)
+		}
+	}()
+
+	func() {
+		// no duplicates
+		s := []int{1, 2, 3, 5}
+
+		got := RemoveDuplicates(s, f)
+		want := []int{1, 2, 3, 5}
+
+		if slices.Compare(got, want) != 0 {
+			t.Errorf("no duplicates failed: RemoveDuplicates = %v, want %v", got, want)
+		}
+	}()
+}
