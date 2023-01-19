@@ -62,6 +62,10 @@ func (n *Node) GetProgram(ctx context.Context, p *t.GetProgramRequest) (*t.GetPr
 func (n *Node) UpdateNode(ctx context.Context, p *t.UpdateNodeRequest) (*t.UpdateNodeReply, error) {
 	log.Printf("updateNode: id = %+v, state = %v", p.Node, p.State)
 
+	if p.Node == nil {
+		return nil, fmt.Errorf("parameter 'Node' is nil")
+	}
+
 	switch p.State {
 	case t.NodeState_JOINED:
 		nn := (*t.NodeInfoWrapper)(p.Node)
