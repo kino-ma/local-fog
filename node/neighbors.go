@@ -100,12 +100,20 @@ func pingTarget() {
 	}
 
 	_, err = consumer.Ping(&types.PingRequest{})
-	if err != nil {
-		log.Printf("[ERROR] Ping request failed: %v", err)
-		log.Printf("start removing node [%x]", target.Id)
-		// start remove
-	} else {
+	if err == nil {
 		log.Printf("pingTarget success: %v", target)
+		return
+	}
+
+	// if ping failed, remove its information from all node
+
+	log.Printf("[ERROR] Ping request failed: %v", err)
+	log.Printf("start removing node [%x]", target.Id)
+
+	err = deleteFromAll(Neighbors, target)
+	if err != nil {
+		log.Printf("[ERROR] failed to delete node from all nodes: %v", err)
+		return
 	}
 }
 
@@ -139,7 +147,7 @@ func syncAll(ns []*types.NodeInfoWrapper) error {
 	return nil
 }
 
-func deleteFromAll(ns []*types.NodeInfoWrapper, n []*types.NodeInfoWrapper) error {
+func deleteFromAll(ns []*types.NodeInfoWrapper, n *types.NodeInfoWrapper) error {
 	updateReq := func(n *types.NodeInfoWrapper, consumer core.FogConsumer) error {
 		node := (*types.NodeInfo)(n)
 
