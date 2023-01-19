@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/hashicorp/mdns v1.0.5
-	golang.org/x/exp v0.0.0-20230113213754-f9f960f08ad4
+	golang.org/x/exp v0.0.0-20230118134722-a68e582fa157
 	google.golang.org/grpc v1.51.0
 	google.golang.org/protobuf v1.28.1
 )
