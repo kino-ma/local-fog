@@ -164,4 +164,16 @@ func TestRemoveDuplicates(t *testing.T) {
 			t.Errorf("no duplicates failed: RemoveDuplicates = %v, want %v", got, want)
 		}
 	}()
+
+	func() {
+		// continued duplicates
+		s := []int{1, 2, 2, 2}
+
+		got := RemoveDuplicates(s, f)
+		want := []int{1, 2}
+
+		if slices.Compare(got, want) != 0 {
+			t.Errorf("continued duplicates failed: RemoveDuplicates = %v, want %v", got, want)
+		}
+	}()
 }
