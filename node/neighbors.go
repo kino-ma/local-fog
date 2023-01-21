@@ -22,9 +22,13 @@ var (
 
 // UpdateNeighbors overwrites neighbors list by given one.
 // Note: this function sorts the argument slice first, i.e., breaks original order.
-func UpdateNeighbors(neighbors []*types.NodeInfoWrapper) {
+func UpdateNeighbors(neighbors []*types.NodeInfoWrapper) bool {
 	sortNeighbors(neighbors)
+	changed := types.CompareNodeList(neighbors, Neighbors)
+
 	Neighbors = neighbors
+
+	return changed
 }
 
 func PatchNeighbors(neighbors []*types.NodeInfoWrapper) {
