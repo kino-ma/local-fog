@@ -9,27 +9,25 @@ import (
 )
 
 const cloudHostName string = "cloud"
-const testDuration = 5 * time.Second
-const testInterval = 1 * time.Millisecond
+const testDuration = 1 * time.Minute
+const testInterval = (1000 / 24) * time.Millisecond
 
 func main() {
-	nodes, err := core.Discover(16)
-	if err != nil {
-		log.Fatalf("failed to discover: %v", err)
-	}
 	timeout := time.After(testDuration)
 	ticker := time.NewTicker(testInterval)
-	l := len(nodes)
-	if l == 0 {
-		l = 1
-	}
-
 loop:
-	for i := 0; ; i = (i + 1) % l {
+	for {
 		select {
 		case <-ticker.C:
-			go func(i int) {
-				host := chooseHost(nodes, i)
+			go func() {
+				s := time.Now()
+				nodes, err := core.Discover(1)
+				if err != nil {
+					log.Printf("failed to discover: %v", err)
+					return
+				}
+				host := chooseHost(nodes, 0)
+
 				consumer, err := core.Connect(host, core.DEFAULT_PORT)
 
 				if err != nil {
@@ -40,7 +38,9 @@ loop:
 					AppId: 1,
 					Body:  []byte{},
 				})
-			}(i)
+				e := time.Since(s)
+				log.Printf("overall: %s", e)
+			}()
 		case <-timeout:
 			break loop
 		}
