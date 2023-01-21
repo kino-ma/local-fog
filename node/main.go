@@ -50,5 +50,7 @@ func main() {
 		log.Fatalf("could not start mdns server: %v", err)
 	}
 
+	addToAll(Neighbors, info)
+
 	log.Fatal(core.Listen(node, core.DEFAULT_HOST, core.DEFAULT_PORT))
 }
