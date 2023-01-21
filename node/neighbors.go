@@ -22,15 +22,19 @@ var (
 
 // UpdateNeighbors overwrites neighbors list by given one.
 // Note: this function sorts the argument slice first, i.e., breaks original order.
-func UpdateNeighbors(neighbors []*types.NodeInfoWrapper) {
+func UpdateNeighbors(neighbors []*types.NodeInfoWrapper) bool {
 	sortNeighbors(neighbors)
+	changed := !types.IsSameList(neighbors, Neighbors)
+
 	Neighbors = neighbors
+
+	return changed
 }
 
-func PatchNeighbors(neighbors []*types.NodeInfoWrapper) {
+func PatchNeighbors(neighbors []*types.NodeInfoWrapper) bool {
 	sortNeighbors(neighbors)
 	ns := patchNodes(Neighbors, neighbors)
-	UpdateNeighbors(ns)
+	return UpdateNeighbors(ns)
 }
 
 func InsertNeighbor(neigh *types.NodeInfoWrapper) {
@@ -60,6 +64,8 @@ func organizerDiscovery() {
 	organizer := chooseOrganizer(Neighbors)
 	iAmOrganizer := organizer.Id == info.Id
 
+	log.Printf("Self = [%v] , my list = %v , organizer = [%v]", info, Neighbors, organizer)
+
 	if iAmOrganizer {
 		log.Print("I am organizer. Running discovery...")
 		nodes, err := core.Discover(16)
@@ -68,13 +74,14 @@ func organizerDiscovery() {
 			log.Printf("[ERR] %v", err)
 		}
 
-		PatchNeighbors(nodes)
+		hasChanged := PatchNeighbors(nodes)
 
 		organizer = chooseOrganizer(Neighbors)
 		iAmOrganizer = organizer.Id == info.Id
 
-		if iAmOrganizer {
-			err := syncAll(Neighbors)
+		if hasChanged && iAmOrganizer {
+			ns := types.RemoveNode(Neighbors, info)
+			err := syncAll(ns)
 			if err != nil {
 				log.Printf("[ERROR] %v", err)
 			}
@@ -110,7 +117,8 @@ func pingTarget() {
 	log.Printf("start removing node [%x]", target.Id)
 
 	DeleteNeighbor(target)
-	err = deleteFromAll(Neighbors, target)
+	ns := types.RemoveNode(Neighbors, info)
+	err = deleteFromAll(ns, target)
 	if err != nil {
 		log.Printf("[ERROR] failed to delete node from all nodes: %v", err)
 		return
@@ -147,9 +155,38 @@ func syncAll(ns []*types.NodeInfoWrapper) error {
 	return nil
 }
 
-func deleteFromAll(ns []*types.NodeInfoWrapper, n *types.NodeInfoWrapper) error {
-	updateReq := func(n *types.NodeInfoWrapper, consumer core.FogConsumer) error {
-		node := (*types.NodeInfo)(n)
+func addToAll(ns []*types.NodeInfoWrapper, target *types.NodeInfoWrapper) error {
+	updateReq := func(dest *types.NodeInfoWrapper, consumer core.FogConsumer) error {
+		node := (*types.NodeInfo)(target)
+
+		uReq := &types.UpdateNodeRequest{
+			Node:  node,
+			State: types.NodeState_JOINED,
+		}
+
+		_, err := consumer.UpdateNode(uReq)
+		if err != nil {
+			err = fmt.Errorf("anonymous updateNode: failed to update information of node [%x]: %w", target.Id, err)
+			return err
+		}
+
+		log.Printf("added [%v] to node [%v]", target, dest)
+
+		return nil
+	}
+
+	err := helper.RequestForAllNode(ns, updateReq)
+
+	if err != nil {
+		return fmt.Errorf("deleteFromAll: 1 ore more errors occured while syncing: %w", err)
+	}
+
+	return nil
+}
+
+func deleteFromAll(ns []*types.NodeInfoWrapper, target *types.NodeInfoWrapper) error {
+	updateReq := func(dest *types.NodeInfoWrapper, consumer core.FogConsumer) error {
+		node := (*types.NodeInfo)(target)
 
 		uReq := &types.UpdateNodeRequest{
 			Node:  node,
@@ -158,7 +195,7 @@ func deleteFromAll(ns []*types.NodeInfoWrapper, n *types.NodeInfoWrapper) error 
 
 		_, err := consumer.UpdateNode(uReq)
 		if err != nil {
-			err = fmt.Errorf("anonymous updateNode: failed to update information of node [%v]: %w", n.Id, err)
+			err = fmt.Errorf("anonymous updateNode: failed to update information of node [%v]: %w", target, err)
 			return err
 		}
 		return nil
@@ -167,7 +204,7 @@ func deleteFromAll(ns []*types.NodeInfoWrapper, n *types.NodeInfoWrapper) error 
 	err := helper.RequestForAllNode(ns, updateReq)
 
 	if err != nil {
-		return fmt.Errorf("deleteFromAll: 1 ore more errors occured while syncing: %v", err)
+		return fmt.Errorf("deleteFromAll: 1 ore more errors occured while syncing: %w", err)
 	}
 
 	return nil
