@@ -147,9 +147,9 @@ func syncAll(ns []*types.NodeInfoWrapper) error {
 	return nil
 }
 
-func addToAll(ns []*types.NodeInfoWrapper, n *types.NodeInfoWrapper) error {
-	updateReq := func(n *types.NodeInfoWrapper, consumer core.FogConsumer) error {
-		node := (*types.NodeInfo)(n)
+func addToAll(ns []*types.NodeInfoWrapper, target *types.NodeInfoWrapper) error {
+	updateReq := func(dest *types.NodeInfoWrapper, consumer core.FogConsumer) error {
+		node := (*types.NodeInfo)(target)
 
 		uReq := &types.UpdateNodeRequest{
 			Node:  node,
@@ -158,9 +158,11 @@ func addToAll(ns []*types.NodeInfoWrapper, n *types.NodeInfoWrapper) error {
 
 		_, err := consumer.UpdateNode(uReq)
 		if err != nil {
-			err = fmt.Errorf("anonymous updateNode: failed to update information of node [%v]: %w", n.Id, err)
+			err = fmt.Errorf("anonymous updateNode: failed to update information of node [%x]: %w", target.Id, err)
 			return err
 		}
+
+		log.Printf("added [%v] to node [%v]", target, dest)
 
 		return nil
 	}
