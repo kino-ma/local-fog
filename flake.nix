@@ -16,6 +16,7 @@
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
             go
+            iproute2
             protobuf
             protoc-gen-go
             protoc-gen-go-grpc
