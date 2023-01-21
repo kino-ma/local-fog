@@ -50,8 +50,8 @@ func Discover(maxCount int) ([]*pb.NodeInfoWrapper, error) {
 	go func() {
 		defer func() {
 			err := recover()
-			e := err.(error)
-			if e.Error() != "send on closed channel" {
+			e, ok := err.(error)
+			if err != nil && (!ok || e.Error() != "send on closed channel") {
 				panic(err)
 			}
 		}()
