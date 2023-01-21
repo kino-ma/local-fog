@@ -147,6 +147,33 @@ func syncAll(ns []*types.NodeInfoWrapper) error {
 	return nil
 }
 
+func addToAll(ns []*types.NodeInfoWrapper, n *types.NodeInfoWrapper) error {
+	updateReq := func(n *types.NodeInfoWrapper, consumer core.FogConsumer) error {
+		node := (*types.NodeInfo)(n)
+
+		uReq := &types.UpdateNodeRequest{
+			Node:  node,
+			State: types.NodeState_JOINED,
+		}
+
+		_, err := consumer.UpdateNode(uReq)
+		if err != nil {
+			err = fmt.Errorf("anonymous updateNode: failed to update information of node [%v]: %w", n.Id, err)
+			return err
+		}
+
+		return nil
+	}
+
+	err := helper.RequestForAllNode(ns, updateReq)
+
+	if err != nil {
+		return fmt.Errorf("deleteFromAll: 1 ore more errors occured while syncing: %w", err)
+	}
+
+	return nil
+}
+
 func deleteFromAll(ns []*types.NodeInfoWrapper, n *types.NodeInfoWrapper) error {
 	updateReq := func(n *types.NodeInfoWrapper, consumer core.FogConsumer) error {
 		node := (*types.NodeInfo)(n)
