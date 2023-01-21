@@ -9,6 +9,8 @@ require (
 	google.golang.org/protobuf v1.28.1
 )
 
+require gocv.io/x/gocv v0.32.1 // indirect
+
 require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/gopacket v1.1.20-0.20210429153827-3eaba0894325 // modified manually. See google/gopacket#698
