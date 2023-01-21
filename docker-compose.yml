@@ -35,6 +35,20 @@ services:
     networks:
       - default
 
+  client:
+    image: nixos/nix:master
+    volumes:
+      - ".:/app:ro"
+      - "nix:/nix"
+      - "./nix.conf:/etc/nix/nix.conf:ro"
+      - "go:/root/go"
+    working_dir: "/app"
+    command: nix develop -c go run ./client
+    networks:
+      - default
+    depends_on:
+      - cloud
+
   cloud:
     image: nixos/nix:master
     volumes:
