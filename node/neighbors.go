@@ -24,7 +24,7 @@ var (
 // Note: this function sorts the argument slice first, i.e., breaks original order.
 func UpdateNeighbors(neighbors []*types.NodeInfoWrapper) bool {
 	sortNeighbors(neighbors)
-	changed := types.CompareNodeList(neighbors, Neighbors)
+	changed := !types.IsSameList(neighbors, Neighbors)
 
 	Neighbors = neighbors
 

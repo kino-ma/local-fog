@@ -61,7 +61,7 @@ func WrapNodeInfos(nodes []*NodeInfo) []*NodeInfoWrapper {
 	return out
 }
 
-func CompareNodeList(n1, n2 []*NodeInfoWrapper) bool {
+func IsSameList(n1, n2 []*NodeInfoWrapper) bool {
 	if len(n1) != len(n2) {
 		return false
 	}
