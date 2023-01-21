@@ -60,3 +60,19 @@ func WrapNodeInfos(nodes []*NodeInfo) []*NodeInfoWrapper {
 
 	return out
 }
+
+func CompareNodeList(n1, n2 []*NodeInfoWrapper) bool {
+	if len(n1) != len(n2) {
+		return false
+	}
+
+	for i, x := range n1 {
+		y := n2[i]
+
+		if CompareNode(x, y) != 0 {
+			return false
+		}
+	}
+
+	return true
+}
