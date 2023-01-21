@@ -20,7 +20,7 @@ message NodeInfo {
 message PingRequest {}
 message PingReply {}
 
-message SyncRequest {}
+message SyncRequest { repeated NodeInfo nodes = 1; }
 message SyncReply { repeated NodeInfo nodes = 1; }
 
 message CallRequest {

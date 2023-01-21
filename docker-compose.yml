@@ -19,7 +19,7 @@ services:
       - "./nix.conf:/etc/nix/nix.conf:ro"
       - "go:/root/go"
     working_dir: "/app"
-    command: sh -c "sleep 1 && nix develop -c go run ./node"
+    command: nix develop -c go run ./node
     networks:
       - default
 
@@ -31,7 +31,7 @@ services:
       - "./nix.conf:/etc/nix/nix.conf:ro"
       - "go:/root/go"
     working_dir: "/app"
-    command: sh -c "sleep 2 && nix develop -c go run ./node"
+    command: nix develop -c go run ./node
     networks:
       - default
 

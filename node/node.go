@@ -21,8 +21,17 @@ func (n *Node) Ping(ctx context.Context, p *t.PingRequest) (*t.PingReply, error)
 
 func (n *Node) Sync(ctx context.Context, p *t.SyncRequest) (*t.SyncReply, error) {
 	fmt.Printf("sync\n")
+	log.Printf("sync before: %v", Neighbors)
 
-	return &t.SyncReply{}, nil
+	ns := p.Nodes
+	nss := t.WrapNodeInfos(ns)
+	PatchNeighbors(nss)
+
+	outNodes := t.UnwrapNodeInfos(Neighbors)
+
+	return &t.SyncReply{
+		Nodes: outNodes,
+	}, nil
 }
 
 func (n *Node) Call(ctx context.Context, p *t.CallRequest) (*t.CallReply, error) {
@@ -47,6 +56,12 @@ func (n *Node) GetProgram(ctx context.Context, p *t.GetProgramRequest) (*t.GetPr
 
 func (n *Node) UpdateNode(ctx context.Context, p *t.UpdateNodeRequest) (*t.UpdateNodeReply, error) {
 	log.Printf("updateNode: id = %+v, state = %v", p.Node, p.State)
+
+	if p.Node == nil {
+		err := fmt.Errorf("parameter 'Node' is nil")
+		log.Printf("[ERROR] %v", err)
+		return nil, err
+	}
 
 	switch p.State {
 	case t.NodeState_JOINED:
