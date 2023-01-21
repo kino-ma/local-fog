@@ -5,9 +5,12 @@ import (
 	"local-fog/core/types"
 	"local-fog/core/utils"
 	"log"
+	"time"
 )
 
 const cloudHostName string = "cloud"
+const testDuration = 10 * time.Minute
+const testInterval = 100 * time.Millisecond
 
 func main() {
 	nodes, err := core.Discover(1)
@@ -31,8 +34,19 @@ func main() {
 		log.Fatalf("failed to connec to the server: %v", err)
 	}
 
-	call(&consumer, &types.CallRequest{
-		AppId: 1,
-		Body:  []byte{},
-	})
+	timeout := time.After(testDuration)
+	ticker := time.NewTicker(testInterval)
+
+loop:
+	for {
+		select {
+		case <-ticker.C:
+			call(&consumer, &types.CallRequest{
+				AppId: 1,
+				Body:  []byte{},
+			})
+		case <-timeout:
+			break loop
+		}
+	}
 }
