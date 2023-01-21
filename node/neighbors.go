@@ -31,10 +31,10 @@ func UpdateNeighbors(neighbors []*types.NodeInfoWrapper) bool {
 	return changed
 }
 
-func PatchNeighbors(neighbors []*types.NodeInfoWrapper) {
+func PatchNeighbors(neighbors []*types.NodeInfoWrapper) bool {
 	sortNeighbors(neighbors)
 	ns := patchNodes(Neighbors, neighbors)
-	UpdateNeighbors(ns)
+	return UpdateNeighbors(ns)
 }
 
 func InsertNeighbor(neigh *types.NodeInfoWrapper) {
@@ -72,12 +72,12 @@ func organizerDiscovery() {
 			log.Printf("[ERR] %v", err)
 		}
 
-		PatchNeighbors(nodes)
+		hasChanged := PatchNeighbors(nodes)
 
 		organizer = chooseOrganizer(Neighbors)
 		iAmOrganizer = organizer.Id == info.Id
 
-		if iAmOrganizer {
+		if hasChanged && iAmOrganizer {
 			err := syncAll(Neighbors)
 			if err != nil {
 				log.Printf("[ERROR] %v", err)
