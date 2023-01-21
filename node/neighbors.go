@@ -80,7 +80,8 @@ func organizerDiscovery() {
 		iAmOrganizer = organizer.Id == info.Id
 
 		if hasChanged && iAmOrganizer {
-			err := syncAll(Neighbors)
+			ns := types.RemoveNode(Neighbors, info)
+			err := syncAll(ns)
 			if err != nil {
 				log.Printf("[ERROR] %v", err)
 			}
@@ -116,7 +117,8 @@ func pingTarget() {
 	log.Printf("start removing node [%x]", target.Id)
 
 	DeleteNeighbor(target)
-	err = deleteFromAll(Neighbors, target)
+	ns := types.RemoveNode(Neighbors, info)
+	err = deleteFromAll(ns, target)
 	if err != nil {
 		log.Printf("[ERROR] failed to delete node from all nodes: %v", err)
 		return
