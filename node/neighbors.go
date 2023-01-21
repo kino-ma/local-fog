@@ -64,6 +64,8 @@ func organizerDiscovery() {
 	organizer := chooseOrganizer(Neighbors)
 	iAmOrganizer := organizer.Id == info.Id
 
+	log.Printf("Self = [%v] , my list = %v , organizer = [%v]", info, Neighbors, organizer)
+
 	if iAmOrganizer {
 		log.Print("I am organizer. Running discovery...")
 		nodes, err := core.Discover(16)
