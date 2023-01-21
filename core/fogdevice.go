@@ -39,6 +39,7 @@ func Connect(host string, port int) (FogConsumer, error) {
 func Discover(maxCount int) ([]*pb.NodeInfoWrapper, error) {
 	// We need to buffer data because mdns.Query will send data immediately after it starts
 	ch := make(chan *mdns.ServiceEntry, maxCount)
+	defer close(ch)
 
 	queryParam := mdns.DefaultParams("_localfog._tcp")
 	queryParam.Entries = ch
@@ -47,8 +48,17 @@ func Discover(maxCount int) ([]*pb.NodeInfoWrapper, error) {
 	errCh := make(chan error)
 
 	go func() {
+		defer func() {
+			err := recover()
+			e, ok := err.(error)
+			if err != nil && (!ok || e.Error() != "send on closed channel") {
+				panic(err)
+			}
+		}()
+
 		err := mdns.Query(queryParam)
 		errCh <- err
+		close(errCh)
 	}()
 
 	log.Printf("start lookup")
@@ -81,7 +91,6 @@ func Discover(maxCount int) ([]*pb.NodeInfoWrapper, error) {
 			nodes = append(nodes, info)
 		}
 	}
-	close(ch)
 
 	return nodes, nil
 }

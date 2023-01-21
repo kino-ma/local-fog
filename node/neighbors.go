@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const syncPeriod = time.Minute
+const syncPeriod = 5 * time.Second
 
 // Neighbors contains neighbors. Note: Many functions assume this slice to be sorted. Do not modify directly.
 var Neighbors []*types.NodeInfoWrapper

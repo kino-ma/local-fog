@@ -1,71 +1,108 @@
 package main
 
 import (
+	"encoding/csv"
 	"local-fog/core"
 	"local-fog/core/types"
 	"local-fog/core/utils"
 	"log"
+	"os"
+	"strconv"
+	"time"
 )
 
 const cloudHostName string = "cloud"
+const testDuration = 10 * time.Second
+const testInterval = (1000 / 24) * time.Millisecond
+
+type result struct {
+	startTime       time.Time
+	requestDuration time.Duration
+	overallDuration time.Duration
+	success         bool
+}
 
 func main() {
-	nodes, err := core.Discover(1)
+	results := make([]result, 0, testDuration/testInterval)
+
+	timeout := time.After(testDuration)
+	ticker := time.NewTicker(testInterval)
+loop:
+	for {
+		select {
+		case <-ticker.C:
+			go func() {
+				s := time.Now()
+				nodes, err := core.Discover(1)
+				if err != nil {
+					log.Printf("failed to discover: %v", err)
+					return
+				}
+				host := chooseHost(nodes, 0)
+
+				consumer, err := core.Connect(host, core.DEFAULT_PORT)
+
+				if err != nil {
+					log.Fatalf("failed to connec to the server: %v", err)
+				}
+
+				_, eReq, err := call(&consumer, &types.CallRequest{
+					AppId: 1,
+					Body:  []byte{},
+				})
+
+				eAll := time.Since(s)
+				log.Printf("overall: %s", eAll)
+
+				r := result{s, eReq, eAll, err == nil}
+				results = append(results, r)
+			}()
+		case <-timeout:
+			break loop
+		}
+	}
+
+	f, err := os.Create("/log/log.csv")
 	if err != nil {
-		log.Fatalf("failed to discover: %v", err)
+		log.Fatalf("failed to open log.csv: %v", err)
 	}
-	var host string
+	defer f.Close()
 
-	if len(nodes) < 1 {
-		host = cloudHostName
-	} else {
-		node := nodes[0]
-		addr := utils.Uint32ToIp((node.AddrV4))
-		log.Printf("discovered: %+v", addr)
-		host = addr.String()
-	}
+	w := csv.NewWriter(f)
+	defer w.Flush()
 
-	consumer, err := core.Connect(host, core.DEFAULT_PORT)
-
-	if err != nil {
-		log.Fatalf("failed to connec to the server: %v", err)
+	headers := []string{"startTime", "requestDuration", "overallDuration", "success"}
+	if err := w.Write(headers); err != nil {
+		log.Fatalf("failed to write csv header: %v", err)
 	}
 
-	pr, err := consumer.Ping(&types.PingRequest{})
-	if err != nil {
-		log.Printf("Ping request failed: %v", err)
-	} else {
-		log.Printf("Ping: %v", pr)
+	for _, r := range results {
+		values := r.GetValues()
+		if err := w.Write(values); err != nil {
+			log.Fatalf("failed to write csv row: %v", err)
+		}
+	}
+}
+
+func chooseHost(ns []*types.NodeInfoWrapper, i int) string {
+	if len(ns) < i+1 {
+		return cloudHostName
 	}
 
-	sr, err := consumer.Sync(&types.SyncRequest{})
-	if err != nil {
-		log.Printf("Sync request failed: %v", err)
-	} else {
-		log.Printf("Sync: %v", sr)
-	}
+	node := ns[i]
+	addr := utils.Uint32ToIp((node.AddrV4))
+	log.Printf("discovered: %+v", addr)
+	return addr.String()
+}
 
-	cr, err := consumer.Call(&types.CallRequest{
-		AppId: 1,
-		Body:  []byte{},
-	})
-	if err != nil {
-		log.Printf("Call request failed: %v", err)
-	} else {
-		log.Printf("Call: %v", cr)
-	}
+func (r *result) GetHeaders() []string {
+	return []string{"startTime", "requestDuration", "overallDuration", "succes"}
+}
 
-	gr, err := consumer.GetProgram(&types.GetProgramRequest{})
-	if err != nil {
-		log.Printf("GetProgram request failed: %v", err)
-	} else {
-		log.Printf("GetProgram: %v", gr)
-	}
-
-	ur, err := consumer.UpdateNode(&types.UpdateNodeRequest{})
-	if err != nil {
-		log.Printf("UpdateNode request failed: %v", err)
-	} else {
-		log.Printf("UpdateNode: %v", ur)
-	}
+func (r *result) GetValues() []string {
+	s := r.startTime.Format(time.RFC3339)
+	rd := strconv.FormatInt(r.requestDuration.Microseconds(), 10)
+	od := strconv.FormatInt(r.overallDuration.Microseconds(), 10)
+	sc := strconv.FormatBool(r.success)
+	return []string{s, rd, od, sc}
 }

@@ -53,6 +53,7 @@ services:
     image: nixos/nix:master
     volumes:
       - ".:/app:ro"
+      - "./log:/log"
       - "nix:/nix"
       - "./nix.conf:/etc/nix/nix.conf:ro"
       - "go:/root/go"
@@ -71,9 +72,11 @@ services:
       - "./nix.conf:/etc/nix/nix.conf:ro"
       - "go:/root/go"
     working_dir: "/app"
-    command: nix develop -c go run ./cloud
+    command: nix develop -c sh -c  'tc qdisc add dev eth0 root netem delay 17ms && go run ./cloud'
     networks:
       - default
+    cap_add:
+      - NET_ADMIN
 
 networks:
   default:

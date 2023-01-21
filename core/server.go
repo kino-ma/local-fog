@@ -20,6 +20,8 @@ var logger = log.New(os.Stderr, "", 0)
 func Listen(s t.LocalFogServer, host string, port int) (err error) {
 	addr := host + ":" + fmt.Sprint(port)
 	l, err := net.Listen(CONNECTION_TYPE, addr)
+	// tl, _ := l.(*net.TCPListener)
+	// ll := &DefectListener{tl}
 
 	if err != nil {
 		err = fmt.Errorf("failed to linten on address %v: %e", addr, err)
@@ -31,5 +33,6 @@ func Listen(s t.LocalFogServer, host string, port int) (err error) {
 
 	logger.Printf("Start listening on '%v'...\n", addr)
 
+	// return gs.Serve(ll)
 	return gs.Serve(l)
 }
