@@ -76,3 +76,13 @@ func IsSameList(n1, n2 []*NodeInfoWrapper) bool {
 
 	return true
 }
+
+func RemoveNode(ns []*NodeInfoWrapper, n *NodeInfoWrapper) []*NodeInfoWrapper {
+	i, found := FindNode(ns, n)
+
+	if !found {
+		return ns
+	}
+
+	return utils.RemoveIndex(ns, i)
+}
