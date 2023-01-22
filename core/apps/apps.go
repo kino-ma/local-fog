@@ -7,6 +7,7 @@ import (
 
 var Applications map[types.AppId]types.AppFunction = map[types.AppId]types.AppFunction{
 	1: Hello,
+	2: RecognizeFace,
 }
 
 func RunApp(appId types.AppId, in []byte) ([]byte, error) {

@@ -110,7 +110,7 @@ func (c FogConsumer) Sync(req *pb.SyncRequest) (*pb.SyncReply, error) {
 }
 
 func (c FogConsumer) Call(req *pb.CallRequest) (*pb.CallReply, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	return c.Client.Call(ctx, req)

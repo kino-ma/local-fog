@@ -4,28 +4,29 @@ import (
 	"fmt"
 	"log"
 
-	"gocv.io/x/gocv"
+	"github.com/Kagami/go-face"
 )
 
-const classifierXmlFile string = "../../data/haarcascade_frontalface_default.xml"
+const imageFile string = "./data/sample.jpeg"
+const modelsDir string = "data/models"
 
 func RecognizeFace(body []byte) ([]byte, error) {
-	c := gocv.NewCascadeClassifier()
-	defer c.Close()
-
-	if !c.Load(classifierXmlFile) {
-		err := fmt.Errorf("failed to load classifier xml file")
-		return nil, err
-	}
-
-	img, err := gocv.IMDecode(body, gocv.IMReadUnchanged)
+	// Init the recognizer.
+	rec, err := face.NewRecognizer(modelsDir)
 	if err != nil {
-		err = fmt.Errorf("failed to decode image file: %w", err)
-		return nil, err
+		log.Fatalf("Can't init face recognizer: %v", err)
+	}
+	// Free the resources when you're finished.
+	defer rec.Close()
+
+	// Test image with 10 faces.
+	// Recognize faces on that image.
+	faces, err := rec.RecognizeFile(imageFile)
+	if err != nil {
+		log.Fatalf("Can't recognize: %v", err)
 	}
 
-	rects := c.DetectMultiScale(img)
-	msg := fmt.Sprintf("found %v faces", len(rects))
+	msg := fmt.Sprintf("found %v faces", len(faces))
 	log.Print(msg)
 
 	out := []byte(msg)

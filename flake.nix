@@ -20,7 +20,10 @@
             protobuf
             protoc-gen-go
             protoc-gen-go-grpc
-            opencv
+            libjpeg
+            dlib
+            lapack
+            blas
           ];
         };
         

@@ -12,8 +12,8 @@ import (
 )
 
 const cloudHostName string = "cloud"
-const testDuration = 10 * time.Second
-const testInterval = (1000 / 24) * time.Millisecond
+const testDuration = 100 * time.Second
+const testInterval = 1 * time.Second
 
 type result struct {
 	startTime       time.Time
@@ -31,32 +31,32 @@ loop:
 	for {
 		select {
 		case <-ticker.C:
-			go func() {
-				s := time.Now()
-				nodes, err := core.Discover(1)
-				if err != nil {
-					log.Printf("failed to discover: %v", err)
-					return
-				}
-				host := chooseHost(nodes, 0)
+			// go func() {
+			s := time.Now()
+			nodes, err := core.Discover(1)
+			if err != nil {
+				log.Printf("failed to discover: %v", err)
+				return
+			}
+			host := chooseHost(nodes, 0)
 
-				consumer, err := core.Connect(host, core.DEFAULT_PORT)
+			consumer, err := core.Connect(host, core.DEFAULT_PORT)
 
-				if err != nil {
-					log.Fatalf("failed to connec to the server: %v", err)
-				}
+			if err != nil {
+				log.Fatalf("failed to connec to the server: %v", err)
+			}
 
-				_, eReq, err := call(&consumer, &types.CallRequest{
-					AppId: 1,
-					Body:  []byte{},
-				})
+			_, eReq, err := call(&consumer, &types.CallRequest{
+				AppId: 2,
+				Body:  []byte{},
+			})
 
-				eAll := time.Since(s)
-				log.Printf("overall: %s", eAll)
+			eAll := time.Since(s)
+			log.Printf("overall: %s", eAll)
 
-				r := result{s, eReq, eAll, err == nil}
-				results = append(results, r)
-			}()
+			r := result{s, eReq, eAll, err == nil}
+			results = append(results, r)
+			// }()
 		case <-timeout:
 			break loop
 		}
