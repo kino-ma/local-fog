@@ -53,7 +53,7 @@ services:
     image: nixos/nix:master
     volumes:
       - ".:/app:ro"
-      - "./log:/log"
+      - "./log:/app/log"
       - "nix:/nix"
       - "./nix.conf:/etc/nix/nix.conf:ro"
       - "go:/root/go"
