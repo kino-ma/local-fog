@@ -161,10 +161,17 @@ def plot_stats(file, figure_file):
     ax_out.set_xlabel("# of requests")
     ax_in.set_xlabel("# of requests")
 
-    ax_out.legend(["cloud", "node A", "node B", "node C", "client"], loc="upper left")
-    ax_in.legend(["cloud", "node A", "node B", "node C", "client"], loc="upper left")
+    ax_out.legend(
+        ["cloud", "node A", "node B", "node C", "client"],
+        loc="upper left",
+    )
+    ax_in.legend(
+        ["cloud", "node A", "node B", "node C", "client"],
+        loc="upper left",
+    )
 
     plt.tight_layout()
+    plt.savefig(figure_file)
     plt.show()
 
 
