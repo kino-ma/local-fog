@@ -3,6 +3,7 @@
 
 import argparse
 import csv
+import re
 
 import matplotlib.patches as mpatches
 import numpy as np
@@ -12,9 +13,16 @@ from matplotlib.path import Path
 COLUMN_HOST = "host"
 COLUMN_OVERALL_LATENCY = "overallDuration"
 
+COLUMN_CONTAINER_NAME = "NAME"
+COLUMN_NET_IO = "NET I/O"
+
+UNIT_KILO = 1_000
+UNIT_MEGA = 1_000 * UNIT_KILO
+UNIT_GIGA = 1_000 * UNIT_MEGA
+
 
 def main(log_file, stats_file, log_figure_file, stats_figure_file):
-    plot_log(log_file, log_figure_file)
+    # plot_log(log_file, log_figure_file)
     plot_stats(stats_file, stats_figure_file)
 
 
@@ -99,8 +107,102 @@ def plot_log(file, figure_file):
     plt.show()
 
 
-def plot_stats(file):
-    pass
+def plot_stats(file, figure_file):
+    rows = []
+    with open(file, "r") as f:
+        reader = csv.DictReader(f)
+
+        rows = list(reader)
+
+    groups = group_by(COLUMN_CONTAINER_NAME, rows)
+
+    if groups.get("--"):
+        del groups["--"]
+
+    d_out = []
+    d_in = []
+
+    for host, rows in sorted(groups.items()):
+        print(f"host = {host}")
+
+        i, o = get_netio(rows)
+        ii = np.array(i, dtype=float)
+        oo = np.array(o, dtype=float)
+        print("i, o", ii.shape, oo.shape)
+        d_in.append(ii)
+        d_out.append(oo)
+
+    print("shape of out, in")
+    print(np.shape(d_out))
+    print(np.shape(d_in))
+
+    shortest = min(map(lambda a: a.shape[0], d_out))
+    print(f"{shortest=}")
+
+    for i, o in zip(d_in, d_out):
+        i.resize(shortest, refcheck=False)
+        o.resize(shortest, refcheck=False)
+
+    print("shape of out, in")
+    print(np.shape(d_out))
+    print(np.shape(d_in))
+
+    d_out = np.vstack(d_out)
+    d_in = np.vstack(d_in)
+
+    fig = plt.figure()
+    ax_out = fig.add_subplot(2, 1, 1)
+    ax_out.stackplot(np.arange(0, d_out.shape[1]), d_out)
+    ax_in = fig.add_subplot(2, 1, 2)
+    ax_in.stackplot(np.arange(0, d_in.shape[1]), d_in)
+
+    plt.tight_layout()
+    plt.show()
+
+
+def get_netio(rows):
+    i = []
+    o = []
+    p = re.compile("([0-9.]+[kMG]?B) / ([0-9.]+[kMG]?B)")
+
+    for row in rows:
+        io = row[COLUMN_NET_IO]
+        if not io:
+            continue
+
+        matches = p.search(io)
+        ii, oo = matches.groups()
+
+        in_bytes, out_bytes = size_to_byte_int(ii), size_to_byte_int(oo)
+
+        i.append(in_bytes), o.append(out_bytes)
+
+    return i, o
+
+
+def size_to_byte_int(size_str):
+    last2 = size_str[-2:]
+    last1 = size_str[-1:]
+    if last2 == "GB":
+        x = float(size_str[:-2])
+        return x * UNIT_GIGA
+    elif last2 == "MB":
+        x = float(size_str[:-2])
+        return x * UNIT_MEGA
+    elif last2 == "kB":
+        x = float(size_str[:-2])
+        return x * UNIT_KILO
+    elif last1 == "B":
+        x = float(size_str[:-1])
+        return x
+    else:
+        raise RuntimeError(f"invalid size string '{size_str}'")
+
+
+def container_to_name(container_name):
+    p = re.compile("local-fog_([a-z0-9]*)_.*")
+    matches = p.search(container_name)
+    return matches and matches.groups(1)
 
 
 def group_by(column, rows):
