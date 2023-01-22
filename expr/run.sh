@@ -20,7 +20,9 @@ log="log/$identifier-log.csv"
 tmp_stats="/tmp/$identifier-stats.log"
 stats="log/$identifier-stats.csv"
 
-stdbuf -oL docker stats --format 'table {{.Name}},{{.CPUPerc}},{{.MemPerc}},{{.NetIO}}' > "$tmp_stats" &
+
+echo 'NAME,CPU %,MEM %,NET I/O' > "$tmp_stats"
+stdbuf -oL docker stats --format '{{.Name}},{{.CPUPerc}},{{.MemPerc}},{{.NetIO}}' >> "$tmp_stats" &
 stats_pid=$!
 
 docker compose up -d node1 node2 node3 cloud
