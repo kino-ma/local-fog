@@ -156,6 +156,14 @@ def plot_stats(file, figure_file):
     ax_in = fig.add_subplot(2, 1, 2)
     ax_in.stackplot(np.arange(0, d_in.shape[1]), d_in)
 
+    ax_out.set_ylabel("bytes sent (GB)")
+    ax_in.set_ylabel("bytes received (GB)")
+    ax_out.set_xlabel("# of requests")
+    ax_in.set_xlabel("# of requests")
+
+    ax_out.legend(["cloud", "node A", "node B", "node C", "client"], loc="upper left")
+    ax_in.legend(["cloud", "node A", "node B", "node C", "client"], loc="upper left")
+
     plt.tight_layout()
     plt.show()
 
