@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
+
 import argparse
 import csv
 
-from matplotlib import pyplot as plt
-import numpy as np
 import matplotlib.patches as mpatches
+import numpy as np
+from matplotlib import pyplot as plt
 from matplotlib.path import Path
-
 
 COLUMN_HOST = "host"
 COLUMN_OVERALL_LATENCY = "overallDuration"
@@ -27,7 +27,7 @@ def plot_log(file):
 
     d = []
     for r in rows:
-        x = int(r[COLUMN_OVERALL_LATENCY])
+        x = int(r[COLUMN_OVERALL_LATENCY]) / 1000
         d.append(x)
 
     fig, ax = plt.subplots(
@@ -42,21 +42,25 @@ def plot_log(file):
     ax[0].boxplot(d)
     ax[1].boxplot(d, sym="")
     # print(d)
+    ax[1].set_ylabel("latency (ms)")
 
     # kuttukeru
     fig.subplots_adjust(hspace=0.0)
 
-    ax[1].set_ylim(5000, 8000)
-    ax[1].set_yticks(np.arange(5000, 8000, 1000))
+    # ticker (lower side)
+    ax[1].set_ylim(5, 8)
+    ax[1].set_yticks(np.arange(5, 8, 1))
 
-    ax[0].set_ylim(1310000, 1370000)
-    ax[0].set_yticks(np.arange(1310000, 1370000 + 1, 20000))
+    # ticker (upper side)
+    ax[0].set_ylim(1310, 1370)
+    ax[0].set_yticks(np.arange(1310, 1370 + 1, 20))
 
+    # hide notches
     ax[1].spines["top"].set_visible(False)
-
     ax[0].spines["bottom"].set_visible(False)
     ax[0].tick_params(axis="x", which="both", bottom=False, labelbottom=False)
 
+    # nyoro nyoro
     d1 = 0.02  # X軸のはみだし量
     d2 = 0.03  # ニョロ波の高さ
     wn = 21  # ニョロ波の数（奇数値を指定）
@@ -87,8 +91,8 @@ def plot_log(file):
         capstyle="round",
     )
 
-    a = ax[1].add_patch(line1)
-    a = ax[1].add_patch(line2)
+    _ = ax[1].add_patch(line1)
+    _ = ax[1].add_patch(line2)
 
     plt.tight_layout()
     plt.show()
