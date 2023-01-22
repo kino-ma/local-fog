@@ -24,6 +24,8 @@
             dlib
             lapack
             blas
+            cudaPackages.cudatoolkit
+            cudaPackages.cudnn
           ];
         };
         

@@ -7,7 +7,9 @@ services:
       - "go:/root/go"
       - "./nix.conf:/etc/nix/nix.conf:ro"
     working_dir: "/app"
-    command: nix develop -c go run ./node
+    command: nix develop --impure -c go run ./node
+    environment:
+      - NIXPKGS_ALLOW_UNFREE=1
     networks:
       - default
 
