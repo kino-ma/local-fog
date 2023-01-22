@@ -23,50 +23,20 @@ def plot_log(file):
 
         rows = list(reader)
 
-    groups = group_by(COLUMN_HOST, rows)
-
-    latencies = {}
-    for k, v in groups.items():
-        ls = []
-        for r in v:
-            ls.append(int(r[COLUMN_OVERALL_LATENCY]) / 1000)
-
-        latencies[k] = ls
+    d = []
+    for r in rows:
+        x = int(r[COLUMN_OVERALL_LATENCY])
+        d.append(x)
 
     fig = plt.figure()
 
-    n = len(latencies.keys())
+    ax = fig.add_subplot(2, 1, 1)
+    ax.figure.set_figwidth(10.0)
+    ax.figure.set_figheight(10.0)
+    ax.set_title("latencies")
+    ax.set_ylabel("latency (ms)")
 
-    ax_node = fig.add_subplot(2, 1, 1)
-    ax_node.figure.set_figwidth(10.0)
-    ax_node.figure.set_figheight(10.0)
-    ax_node.set_title("fog nodes")
-    ax_node.set_ylabel("latency (ms)")
-    ax_node.set_ylim(5.0, 11.0)
-
-    ax_cloud = fig.add_subplot(2, 1, 2)
-    ax_cloud.figure.set_figwidth(10.0)
-    ax_cloud.figure.set_figheight(10.0)
-    ax_cloud.set_title("cloud")
-    ax_cloud.set_ylabel("latency (ms)")
-
-    d_nodes = list(
-        map(
-            lambda x: x[1],
-            filter(lambda item: item[0] != "cloud", latencies.items()),
-        )
-    )
-    d_cloud = list(
-        map(
-            lambda x: x[1],
-            filter(lambda item: item[0] == "cloud", latencies.items()),
-        )
-    )
-
-    print(len(d_nodes))
-
-    ax_node.boxplot(d_nodes, sym="")
-    ax_cloud.boxplot(d_cloud)
+    ax.boxplot(d)
 
     plt.tight_layout()
     plt.show()
