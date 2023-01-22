@@ -36,34 +36,33 @@ def plot_log(file):
 
     n = len(latencies.keys())
 
+    ax = fig.add_subplot(2, 1, 1)
+    # ax.set_ylim(5, 2000)
+    ax.figure.set_figwidth(10.0)
+    ax.figure.set_figheight(10.0)
+    ax.set_yscale("log")
+    # ax.set_title(host)
+    ax.set_ylabel("latency (ms)")
+
+    ax.boxplot(latencies.values(), sym="")
+
+    # for i, (host, latcs) in enumerate(sorted(latencies.items())):
+    #     print(f"{host}: {len(latcs)} rows ([0] = {latcs[0]}")
+    # i = i + 1
+    # ax = fig.add_subplot(n // 2 + 1, 2, i)
+    # ax.set_ylim(5, 2000)
+    # ax.figure.set_figwidth(10.0)
+    # ax.figure.set_figheight(10.0)
+    # ax.set_title(host)
+    # ax.set_ylabel("latency (ms)")
+    # ax.boxplot(latcs, sym="")
+    # ax.set_aspect(1.0 / ax.get_data_ratio())
+
     total_ax = fig.add_subplot(n // 2 + 1, 2, n + 1)
     total_ax.set_title("total")
     total_ax.set_xlabel("latency (ms)")
     total_ax.set_ylabel("times of request")
     total_ax.set_yscale("log")
-
-    for i, (host, latcs) in enumerate(sorted(latencies.items())):
-        print(f"{host}: {len(latcs)} rows ([0] = {latcs[0]}")
-        i = i + 1
-        ax = fig.add_subplot(n // 2 + 1, 2, i)
-        ax.set_yscale("log")
-        ax.set_ylim(5, 2000)
-        ax.figure.set_figwidth(10.0)
-        ax.figure.set_figheight(10.0)
-        ax.set_title(host)
-        ax.set_ylabel("latency (ms)")
-        ax.scatter(range(1, len(latcs) + 1), latcs)
-        ax.set_aspect(1.0 / ax.get_data_ratio())
-
-        total_ax.scatter(
-            range(1, len(latcs) + 1),
-            latcs,
-            label=host,
-        )
-
-    latcs = []
-    for ls in latencies.values():
-        latcs.extend(ls)
 
     plt.tight_layout()
     plt.show()
@@ -76,11 +75,12 @@ def plot_stats(file):
 def group_by(column, rows):
     d = {}
 
-    for r in rows:
+    for i, r in enumerate(rows):
         x = r[column]
         if d.get(x) is None:
             d[x] = []
 
+        r["originalIndex"] = i
         d[x].append(r)
 
     return d
