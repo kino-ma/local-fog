@@ -34,7 +34,7 @@ func (n *Cloud) Sync(ctx context.Context, p *t.SyncRequest) (*t.SyncReply, error
 }
 
 func (n *Cloud) Call(ctx context.Context, p *t.CallRequest) (*t.CallReply, error) {
-	fmt.Printf("call: id = %v, body = %v\n", p.AppId, p.Body)
+	fmt.Printf("call: id = %v, body = %v\n", p.AppId, p.Body[:20])
 
 	appId := t.AppId(p.AppId)
 	body := p.Body
