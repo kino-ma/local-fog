@@ -14,8 +14,8 @@ import (
 )
 
 const cloudHostName string = "cloud"
-const testDuration = 10 * time.Second
-const testInterval = (1000 / 24) * time.Millisecond
+const testDuration = 10 * time.Minute
+const testInterval = time.Second / 24
 
 const imageFileName = "data/sample.jpeg"
 
