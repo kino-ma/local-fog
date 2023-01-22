@@ -13,12 +13,12 @@ COLUMN_HOST = "host"
 COLUMN_OVERALL_LATENCY = "overallDuration"
 
 
-def main(log_file, stats_file):
-    plot_log(log_file)
-    plot_stats(stats_file)
+def main(log_file, stats_file, log_figure_file, stats_figure_file):
+    plot_log(log_file, log_figure_file)
+    plot_stats(stats_file, stats_figure_file)
 
 
-def plot_log(file):
+def plot_log(file, figure_file):
     rows = []
     with open(file, "r") as f:
         reader = csv.DictReader(f)
@@ -95,6 +95,7 @@ def plot_log(file):
     _ = ax[1].add_patch(line2)
 
     plt.tight_layout()
+    plt.savefig(figure_file)
     plt.show()
 
 
@@ -131,8 +132,23 @@ if __name__ == "__main__":
         help="file name of the stats file",
     )
 
+    parser.add_argument(
+        "log_figure_file",
+        metavar="LOG_FIGURE_FILE",
+        type=str,
+        help="file name to save the graph of log",
+    )
+    parser.add_argument(
+        "stats_figure_file",
+        metavar="STATS_FIGURE_FILE",
+        type=str,
+        help="file name to save the graph of stats",
+    )
+
     args = parser.parse_args()
     main(
         log_file=args.log_file,
         stats_file=args.stats_file,
+        log_figure_file=args.log_figure_file,
+        stats_figure_file=args.stats_figure_file,
     )
