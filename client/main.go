@@ -39,6 +39,8 @@ type result struct {
 }
 
 func main() {
+	logFile := os.Args[1]
+
 	results := make([]result, 0, testDuration/testInterval)
 
 	timeout := time.After(testDuration)
@@ -78,7 +80,7 @@ loop:
 		}
 	}
 
-	f, err := os.Create("/log/log.csv")
+	f, err := os.Create(logFile)
 	if err != nil {
 		log.Fatalf("failed to open log.csv: %v", err)
 	}
