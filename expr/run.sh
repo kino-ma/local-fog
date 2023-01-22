@@ -17,4 +17,7 @@ wait $stats_pid
 sed -u 's/\x1b\[[0-9;]*[mGKHFJ]//g' /tmp/stats.log > log/stats.csv
 rm /tmp/stats.log
 
+echo 'plot figures...'
+./expr/plot.py log/log.csv log/stats.csv log/figs/log.png log/figs/stats.png
+
 echo 'done.'
