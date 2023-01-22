@@ -18,7 +18,7 @@ func call(c *core.FogConsumer, req *types.CallRequest) (*types.CallReply, time.D
 		return nil, 0, err
 	}
 
-	log.Printf("Call success: %v", cr)
+	log.Printf("Call success: %v", cr.Output[:20])
 	e := time.Since(s)
 	log.Printf("took %s", e)
 
