@@ -2,9 +2,12 @@
 
 import argparse
 import csv
-from pprint import pprint
 
 from matplotlib import pyplot as plt
+
+
+COLUMN_HOST = "host"
+COLUMN_OVERALL_LATENCY = "overallDuration"
 
 
 def main(log_file, stats_file):
@@ -19,9 +22,42 @@ def plot_log(file):
 
         rows = list(reader)
 
-    groups = group_by("host", rows)
+    groups = group_by(COLUMN_HOST, rows)
 
-    pprint(groups)
+    latencies = {}
+    for k, v in groups.items():
+        ls = []
+        for r in v:
+            ls.append(int(r[COLUMN_OVERALL_LATENCY]) / 1000)
+
+        latencies[k] = ls
+
+    fig = plt.figure()
+
+    n = len(latencies.keys())
+    for i, (host, latcs) in enumerate(sorted(latencies.items())):
+        print(f"{host}: {len(latcs)} rows ([0] = {latcs[0]}")
+        i = i + 1
+        ax = fig.add_subplot(n // 2 + 1, 2, i)
+        ax.set_title(host)
+        ax.set_xlabel("latency (ms)")
+        ax.set_ylabel("times of request")
+        ax.hist(latcs, 10)
+
+    latcs = []
+    for ls in latencies.values():
+        latcs.extend(ls)
+
+    ax = fig.add_subplot(n // 2 + 1, 2, n + 1)
+    ax.set_title("total")
+    ax.set_xlabel("latency (ms)")
+    ax.set_ylabel("times of request")
+    ax.hist(latcs, 100)
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+
+    plt.tight_layout()
+    plt.show()
 
 
 def plot_stats(file):
