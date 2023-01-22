@@ -2,7 +2,7 @@
 
 echo 'starting experiment...'
 
-stdbuf -oL docker stats --format '{{.Name}},{{.CPUPerc}},{{.MemPerc}},{{.NetIO}}' > /tmp/stats.log &
+stdbuf -oL docker stats --format 'table {{.Name}},{{.CPUPerc}},{{.MemPerc}},{{.NetIO}}' > /tmp/stats.log &
 stats_pid=$!
 
 docker compose up -d node1 node2 node3 cloud
