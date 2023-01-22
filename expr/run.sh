@@ -17,8 +17,10 @@ fi
 echo 'starting experiment...'
 
 log="log/$identifier-log.csv"
+log_figure="log/figs/$identifier-log.png"
 tmp_stats="/tmp/$identifier-stats.log"
 stats="log/$identifier-stats.csv"
+stats_figure="log/figs/$identifier-stats.png"
 
 
 echo 'NAME,CPU %,MEM %,NET I/O' > "$tmp_stats"
@@ -38,6 +40,6 @@ sed -u 's/\x1b\[[0-9;]*[mGKHFJ]//g' $tmp_stats > $stats
 rm $tmp_stats
 
 echo 'plot figures...'
-./expr/plot.py log/log.csv log/stats.csv log/figs/log.png log/figs/stats.png
+./expr/plot.py "$log" "$stats" "$log_figure" "$stats_figure"
 
 echo 'done.'
