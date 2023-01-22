@@ -37,19 +37,36 @@ def plot_log(file):
 
     n = len(latencies.keys())
 
-    for i, (host, latcs) in enumerate(sorted(latencies.items())):
-        print(f"{host}: {len(latcs)} rows ([0] = {latcs[0]}")
-        i = i + 1
-        ax = fig.add_subplot(n // 2 + n % 2, 2, i)
-        ax.figure.set_figwidth(10.0)
-        ax.figure.set_figheight(10.0)
-        ax.set_title(host)
-        ax.set_ylabel("latency (ms)")
-        q95 = np.percentile(latcs, 99)
-        ax.set_ylim(5.0, q95)
-        # ax.set_ylim(5)
-        ax.boxplot(latcs, sym="")
-        ax.set_aspect(1.0 / ax.get_data_ratio())
+    ax_node = fig.add_subplot(2, 1, 1)
+    ax_node.figure.set_figwidth(10.0)
+    ax_node.figure.set_figheight(10.0)
+    ax_node.set_title("fog nodes")
+    ax_node.set_ylabel("latency (ms)")
+    ax_node.set_ylim(5.0, 11.0)
+
+    ax_cloud = fig.add_subplot(2, 1, 2)
+    ax_cloud.figure.set_figwidth(10.0)
+    ax_cloud.figure.set_figheight(10.0)
+    ax_cloud.set_title("cloud")
+    ax_cloud.set_ylabel("latency (ms)")
+
+    d_nodes = list(
+        map(
+            lambda x: x[1],
+            filter(lambda item: item[0] != "cloud", latencies.items()),
+        )
+    )
+    d_cloud = list(
+        map(
+            lambda x: x[1],
+            filter(lambda item: item[0] == "cloud", latencies.items()),
+        )
+    )
+
+    print(len(d_nodes))
+
+    ax_node.boxplot(d_nodes, sym="")
+    ax_cloud.boxplot(d_cloud)
 
     plt.tight_layout()
     plt.show()
