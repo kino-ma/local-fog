@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 
-echo 'starting experiment...'
-
 program=$0
 
 usage() {
-    echo "$program identifier"
+    printf "usage:\t$program identifier\n"
 }
 
 identifier=$1
@@ -15,6 +13,8 @@ then
     usage
     exit 1
 fi
+
+echo 'starting experiment...'
 
 log="log/$identifier-log.csv"
 tmp_stats="/tmp/$identifier-stats.log"
