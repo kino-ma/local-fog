@@ -31,6 +31,7 @@ func init() {
 }
 
 type result struct {
+	host            string
 	startTime       time.Time
 	requestDuration time.Duration
 	overallDuration time.Duration
@@ -69,7 +70,7 @@ loop:
 				eAll := time.Since(s)
 				log.Printf("overall: %s", eAll)
 
-				r := result{s, eReq, eAll, err == nil}
+				r := result{host, s, eReq, eAll, err == nil}
 				results = append(results, r)
 			}()
 		case <-timeout:
@@ -111,13 +112,14 @@ func chooseHost(ns []*types.NodeInfoWrapper, i int) string {
 }
 
 func (r *result) GetHeaders() []string {
-	return []string{"startTime", "requestDuration", "overallDuration", "succes"}
+	return []string{"host", "startTime", "requestDuration", "overallDuration", "succes"}
 }
 
 func (r *result) GetValues() []string {
+	h := r.host
 	s := r.startTime.Format(time.RFC3339)
 	rd := strconv.FormatInt(r.requestDuration.Microseconds(), 10)
 	od := strconv.FormatInt(r.overallDuration.Microseconds(), 10)
 	sc := strconv.FormatBool(r.success)
-	return []string{s, rd, od, sc}
+	return []string{h, s, rd, od, sc}
 }
