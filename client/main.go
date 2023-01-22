@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/csv"
+	"fmt"
+	"io/ioutil"
 	"local-fog/core"
 	"local-fog/core/types"
 	"local-fog/core/utils"
@@ -14,6 +16,19 @@ import (
 const cloudHostName string = "cloud"
 const testDuration = 10 * time.Second
 const testInterval = (1000 / 24) * time.Millisecond
+
+const imageFileName = "data/sample.jpeg"
+
+var imageBin []byte
+
+func init() {
+	bin, err := ioutil.ReadFile(imageFileName)
+	if err != nil {
+		err = fmt.Errorf("failed to read image file: %w", err)
+		log.Fatal(err)
+	}
+	imageBin = bin
+}
 
 type result struct {
 	startTime       time.Time
@@ -47,8 +62,8 @@ loop:
 				}
 
 				_, eReq, err := call(&consumer, &types.CallRequest{
-					AppId: 1,
-					Body:  []byte{},
+					AppId: 2,
+					Body:  imageBin,
 				})
 
 				eAll := time.Since(s)
