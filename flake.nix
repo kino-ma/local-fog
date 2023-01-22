@@ -16,10 +16,13 @@
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
             go
+            python3
             iproute2
             protobuf
             protoc-gen-go
             protoc-gen-go-grpc
+
+            python39Packages.matplotlib
           ];
         };
         
