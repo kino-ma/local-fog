@@ -22,7 +22,7 @@ UNIT_GIGA = 1_000 * UNIT_MEGA
 
 
 def main(log_file, stats_file, log_figure_file, stats_figure_file):
-    # plot_log(log_file, log_figure_file)
+    plot_log(log_file, log_figure_file)
     plot_stats(stats_file, stats_figure_file)
 
 
