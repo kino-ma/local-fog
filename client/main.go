@@ -87,7 +87,7 @@ loop:
 	w := csv.NewWriter(f)
 	defer w.Flush()
 
-	headers := []string{"startTime", "requestDuration", "overallDuration", "success"}
+	headers := (&result{}).GetHeaders()
 	if err := w.Write(headers); err != nil {
 		log.Fatalf("failed to write csv header: %v", err)
 	}
